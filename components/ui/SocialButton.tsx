@@ -24,7 +24,7 @@ export default function SocialButton({
   textStyle,
   ...rest
 }: SocialButtonProps) {
-  const { theme } = useTheme();
+  const { theme, isDarkMode } = useTheme();
 
   // Get icon name based on provider
   const getIconName = (): React.ComponentProps<typeof Ionicons>['name'] => {
@@ -68,7 +68,7 @@ export default function SocialButton({
       borderColor: theme.colors.border,
       borderRadius: 25,
       height: 56,
-      backgroundColor: theme.colors.card,
+      backgroundColor: isDarkMode ? '#342F3F' : theme.colors.card,
       marginBottom: 16,
     },
     buttonText: {
@@ -88,7 +88,7 @@ export default function SocialButton({
         name={getIconName()}
         size={24}
         color={getIconColor()}
-        style={{ marginRight: 8 }}
+        style={{ marginRight: 12 }}
       />
       <Text style={[dynamicStyles.buttonText, textStyle]}>
         {title || getDefaultTitle()}

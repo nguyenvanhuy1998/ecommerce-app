@@ -28,7 +28,8 @@ export default function AuthFooter({
     container: {
       flexDirection: 'row',
       justifyContent: 'center',
-      marginBottom: 32,
+      marginBottom: 24,
+      marginTop: 8,
     },
     normalText: {
       color: theme.colors.textSecondary,

@@ -18,6 +18,7 @@ const lightTheme: Theme = {
     ...defaultTheme,
     colors: {
         ...defaultTheme.colors,
+        primary: "#7E57C2",
         background: "#FFFFFF",
         card: "#F4F4F4",
         text: "#272727",
@@ -33,6 +34,7 @@ const darkTheme: Theme = {
     ...defaultTheme,
     colors: {
         ...defaultTheme.colors,
+        primary: "#7E57C2",
         background: "#1D182A",
         card: "#342F3F",
         text: "#FFFFFF",

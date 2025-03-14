@@ -32,17 +32,17 @@ export default function Input({
   error,
   ...rest
 }: InputProps) {
-  const { theme } = useTheme();
+  const { theme, isDarkMode } = useTheme();
 
   const dynamicStyles = StyleSheet.create({
     container: {
       position: 'relative',
       width: '100%',
-      marginBottom: error ? 8 : 16,
+      marginBottom: error ? 8 : 24,
     },
     input: {
-      height: 50,
-      backgroundColor: theme.colors.input,
+      height: 56,
+      backgroundColor: isDarkMode ? '#342F3F' : '#F4F4F4',
       borderRadius: 8,
       paddingHorizontal: 16,
       fontSize: 16,
@@ -56,13 +56,13 @@ export default function Input({
     leftIconContainer: {
       position: 'absolute',
       left: 16,
-      top: 13,
+      top: 16,
       zIndex: 1,
     },
     rightIconContainer: {
       position: 'absolute',
       right: 16,
-      top: 13,
+      top: 16,
       zIndex: 1,
     },
     errorText: {

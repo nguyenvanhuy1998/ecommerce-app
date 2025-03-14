@@ -42,13 +42,13 @@ export default function AuthLayout({
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 32,
+      marginBottom: 40,
     },
     title: {
       fontSize: 32,
       fontWeight: 'bold',
       color: theme.colors.text,
-      marginBottom: 30,
+      marginBottom: 20,
     },
     themeToggle: {
       padding: 8,

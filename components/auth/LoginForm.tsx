@@ -75,7 +75,8 @@ export default function LoginForm({
     forgotPasswordContainer: {
       flexDirection: 'row',
       justifyContent: 'center',
-      marginBottom: 32,
+      marginBottom: 16,
+      marginTop: 8,
     },
     normalText: {
       color: theme.colors.textSecondary,
@@ -91,6 +92,9 @@ export default function LoginForm({
       marginBottom: 16,
       textAlign: 'center',
     },
+    buttonContainer: {
+      marginTop: 8,
+    }
   });
 
   return (
@@ -109,14 +113,16 @@ export default function LoginForm({
             autoFocus
           />
 
-          <Button
-            title="Continue"
-            onPress={handleContinue}
-            loading={isLoading}
-            disabled={isLoading}
-            size="large"
-            fullWidth
-          />
+          <View style={dynamicStyles.buttonContainer}>
+            <Button
+              title="Continue"
+              onPress={handleContinue}
+              loading={isLoading}
+              disabled={isLoading}
+              size="large"
+              fullWidth
+            />
+          </View>
         </>
       ) : (
         // Step 2: Password input
@@ -131,14 +137,16 @@ export default function LoginForm({
             autoFocus
           />
 
-          <Button
-            title="Continue"
-            onPress={handleLogin}
-            loading={isLoading}
-            disabled={isLoading}
-            size="large"
-            fullWidth
-          />
+          <View style={dynamicStyles.buttonContainer}>
+            <Button
+              title="Continue"
+              onPress={handleLogin}
+              loading={isLoading}
+              disabled={isLoading}
+              size="large"
+              fullWidth
+            />
+          </View>
 
           <View style={dynamicStyles.forgotPasswordContainer}>
             <Text style={dynamicStyles.normalText}>Forgot Password? </Text>

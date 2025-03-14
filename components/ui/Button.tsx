@@ -8,6 +8,7 @@ import {
   TextStyle,
   TouchableOpacityProps
 } from 'react-native';
+import { useTheme } from '../../context/ThemeContext';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -33,6 +34,8 @@ export default function Button({
   textStyle,
   ...rest
 }: ButtonProps) {
+  const { theme } = useTheme();
+  
   // Determine button styles based on variant
   const getButtonStyle = () => {
     switch (variant) {
@@ -89,6 +92,12 @@ export default function Button({
     }
   };
 
+  const dynamicStyles = StyleSheet.create({
+    primaryButton: {
+      backgroundColor: theme.colors.primary,
+    }
+  });
+
   return (
     <TouchableOpacity
       style={[
@@ -97,6 +106,7 @@ export default function Button({
         getSizeStyle(),
         fullWidth && styles.fullWidth,
         disabled && styles.disabledButton,
+        variant === 'primary' && dynamicStyles.primaryButton,
         style,
       ]}
       onPress={onPress}
@@ -127,7 +137,7 @@ export default function Button({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 8,
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -136,7 +146,7 @@ const styles = StyleSheet.create({
   },
   // Variant styles
   primaryButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#7E57C2',
   },
   primaryButtonText: {
     color: '#fff',
@@ -165,14 +175,17 @@ const styles = StyleSheet.create({
   smallButton: {
     paddingVertical: 6,
     paddingHorizontal: 12,
+    height: 40,
   },
   mediumButton: {
     paddingVertical: 10,
     paddingHorizontal: 16,
+    height: 48,
   },
   largeButton: {
     paddingVertical: 14,
     paddingHorizontal: 20,
+    height: 56,
   },
   // Text size styles
   smallButtonText: {
@@ -182,7 +195,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   largeButtonText: {
-    fontSize: 18,
+    fontSize: 16,
   },
   // Width styles
   fullWidth: {

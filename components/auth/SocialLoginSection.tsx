@@ -25,12 +25,13 @@ export default function SocialLoginSection({
   const dynamicStyles = StyleSheet.create({
     container: {
       width: '100%',
-      gap: 16,
+      gap: 12,
+      marginTop: 20,
     },
     dividerContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 32,
+      marginBottom: 24,
     },
     divider: {
       flex: 1,
