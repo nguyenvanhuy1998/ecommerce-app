@@ -13,9 +13,11 @@ import {
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { theme, isDarkMode, toggleTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -53,266 +55,184 @@ export default function LoginScreen() {
     }
   };
 
+  // Create styles with theme
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+      marginBottom: 30,
+    },
+    inputContainer: {
+      marginBottom: 16,
+    },
+    input: {
+      height: 50,
+      backgroundColor: theme.colors.input,
+      borderRadius: 8,
+      paddingHorizontal: 16,
+      fontSize: 16,
+      color: theme.colors.text,
+      width: '100%',
+    },
+    continueButton: {
+      backgroundColor: theme.colors.primary,
+      borderRadius: 25,
+      height: 56,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 24,
+      marginBottom: 32,
+    },
+    buttonText: {
+      color: '#FFFFFF',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    createAccountContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginBottom: 32,
+    },
+    normalText: {
+      color: theme.colors.textSecondary,
+      fontSize: 14,
+    },
+    linkText: {
+      color: theme.colors.primary,
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    dividerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 32,
+    },
+    divider: {
+      flex: 1,
+      height: 1,
+      backgroundColor: theme.colors.divider,
+    },
+    socialButtonsContainer: {
+      gap: 16,
+    },
+    socialButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: 25,
+      height: 56,
+      backgroundColor: theme.colors.card,
+    },
+    socialButtonIcon: {
+      width: 24,
+      height: 24,
+      marginRight: 8,
+    },
+    socialButtonText: {
+      color: theme.colors.text,
+      fontSize: 16,
+      fontWeight: '500',
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 32,
+    },
+    themeToggle: {
+      padding: 8,
+    },
+  });
+
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={dynamicStyles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.logoContainer}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/150' }}
-            style={styles.logo}
+      <ScrollView 
+        contentContainerStyle={{ 
+          flexGrow: 1, 
+          padding: 24,
+          paddingTop: 60,
+        }}
+      >
+        <View style={dynamicStyles.headerContainer}>
+          <Text style={dynamicStyles.title}>Sign in</Text>
+          <TouchableOpacity 
+            style={dynamicStyles.themeToggle}
+            onPress={toggleTheme}
+            accessibilityLabel="Toggle dark mode"
+          >
+            <Ionicons 
+              name={isDarkMode ? "sunny-outline" : "moon-outline"} 
+              size={24} 
+              color={theme.colors.text} 
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View style={dynamicStyles.inputContainer}>
+          <TextInput
+            style={dynamicStyles.input}
+            placeholder="Email Address"
+            placeholderTextColor={theme.colors.textTertiary}
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
           />
-          <Text style={styles.appName}>E-Commerce App</Text>
         </View>
-
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to your account</Text>
-
-        {error ? (
-          <View style={styles.errorContainer}>
-            <Ionicons name="alert-circle" size={20} color="#FF3B30" />
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        ) : null}
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Email</Text>
-          <View style={styles.inputWrapper}>
-            <Ionicons name="mail-outline" size={20} color="#999" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              returnKeyType="next"
-            />
-          </View>
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Password</Text>
-          <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              returnKeyType="done"
-            />
-            <TouchableOpacity
-              style={styles.passwordToggle}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Ionicons
-                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                size={20}
-                color="#999"
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.forgotPassword}>
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.loginButton, (isLoading || !email || !password) && styles.disabledButton]}
+          style={dynamicStyles.continueButton}
           onPress={handleLogin}
-          disabled={isLoading || !email || !password}
+          disabled={isLoading}
         >
           {isLoading ? (
             <ActivityIndicator color="#fff" size="small" />
           ) : (
-            <Text style={styles.loginButtonText}>Sign In</Text>
+            <Text style={dynamicStyles.buttonText}>Continue</Text>
           )}
         </TouchableOpacity>
 
-        <View style={styles.dividerContainer}>
-          <View style={styles.divider} />
-          <Text style={styles.dividerText}>OR</Text>
-          <View style={styles.divider} />
-        </View>
-
-        <View style={styles.socialButtonsContainer}>
-          <TouchableOpacity style={styles.socialButton}>
-            <Ionicons name="logo-google" size={20} color="#000" />
-            <Text style={styles.socialButtonText}>Google</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.socialButton}>
-            <Ionicons name="logo-apple" size={20} color="#000" />
-            <Text style={styles.socialButtonText}>Apple</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.signupContainer}>
-          <Text style={styles.signupText}>Don't have an account? </Text>
-          <Link href="/register" asChild>
+        <View style={dynamicStyles.createAccountContainer}>
+          <Text style={dynamicStyles.normalText}>Don't have an Account? </Text>
+          <Link href="register" asChild>
             <TouchableOpacity>
-              <Text style={styles.signupLink}>Sign Up</Text>
+              <Text style={dynamicStyles.linkText}>Create One</Text>
             </TouchableOpacity>
           </Link>
+        </View>
+
+        <View style={dynamicStyles.dividerContainer}>
+          <View style={dynamicStyles.divider} />
+        </View>
+
+        <View style={dynamicStyles.socialButtonsContainer}>
+          <TouchableOpacity style={dynamicStyles.socialButton}>
+            <Ionicons name="logo-apple" size={24} color={theme.colors.text} style={{ marginRight: 8 }} />
+            <Text style={dynamicStyles.socialButtonText}>Continue With Apple</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={dynamicStyles.socialButton}>
+            <Ionicons name="logo-google" size={24} color={theme.colors.text} style={{ marginRight: 8 }} />
+            <Text style={dynamicStyles.socialButtonText}>Continue With Google</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={dynamicStyles.socialButton}>
+            <Ionicons name="logo-facebook" size={24} color="#1877F2" style={{ marginRight: 8 }} />
+            <Text style={dynamicStyles.socialButtonText}>Continue With Facebook</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 20,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 40,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-  },
-  appName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 30,
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFEBEE',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  errorText: {
-    color: '#FF3B30',
-    marginLeft: 8,
-    flex: 1,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E5EA',
-    borderRadius: 8,
-    backgroundColor: '#F2F2F7',
-  },
-  inputIcon: {
-    marginLeft: 12,
-  },
-  input: {
-    flex: 1,
-    height: 50,
-    paddingHorizontal: 12,
-    fontSize: 16,
-  },
-  passwordToggle: {
-    padding: 12,
-  },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: 24,
-  },
-  forgotPasswordText: {
-    color: '#007AFF',
-    fontSize: 14,
-  },
-  loginButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  disabledButton: {
-    backgroundColor: '#A9A9A9',
-  },
-  loginButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E5E5EA',
-  },
-  dividerText: {
-    color: '#999',
-    paddingHorizontal: 10,
-    fontSize: 14,
-  },
-  socialButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 30,
-  },
-  socialButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E5EA',
-    borderRadius: 8,
-    padding: 12,
-    width: '48%',
-  },
-  socialButtonText: {
-    marginLeft: 8,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  signupText: {
-    color: '#666',
-    fontSize: 14,
-  },
-  signupLink: {
-    color: '#007AFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-}); 
+} 

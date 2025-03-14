@@ -1,9 +1,63 @@
 // Theme constants for the e-commerce app
 
-// Colors
-export const colors = {
+/**
+ * Color palette for the application
+ */
+export type ColorPalette = {
   // Primary colors
-  primary: '#007AFF',
+  primary: string;
+  primaryDark: string;
+  primaryLight: string;
+
+  // Secondary colors
+  secondary: string;
+  secondaryDark: string;
+  secondaryLight: string;
+
+  // Accent colors
+  accent: string;
+  accentDark: string;
+  accentLight: string;
+
+  // Semantic colors
+  success: string;
+  warning: string;
+  error: string;
+  info: string;
+
+  // Neutral colors
+  black: string;
+  darkGray: string;
+  gray: string;
+  lightGray: string;
+  veryLightGray: string;
+  white: string;
+
+  // Background colors
+  background: string;
+  card: string;
+  input: string;
+
+  // Border colors
+  border: string;
+  divider: string;
+
+  // Text colors
+  text: string;
+  textSecondary: string;
+  textTertiary: string;
+  textInverse: string;
+
+  // Status colors
+  inStock: string;
+  outOfStock: string;
+  sale: string;
+  new: string;
+};
+
+export const colors: ColorPalette = {
+  // Primary colors
+  primary: '#8E6CEF',
   primaryDark: '#0062CC',
   primaryLight: '#4DA3FF',
 
@@ -53,8 +107,44 @@ export const colors = {
   new: '#4CAF50',
 };
 
-// Typography
-export const typography = {
+/**
+ * Typography definitions for the application
+ */
+export type TypographyType = {
+  fontFamily: {
+    regular: string;
+    medium: string;
+    bold: string;
+  };
+  fontSize: {
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    xxl: number;
+    xxxl: number;
+    display: number;
+  };
+  fontWeight: {
+    regular: string;
+    medium: string;
+    semiBold: string;
+    bold: string;
+  };
+  lineHeight: {
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    xxl: number;
+    xxxl: number;
+    display: number;
+  };
+};
+
+export const typography: TypographyType = {
   // Font families
   fontFamily: {
     regular: 'System',
@@ -95,8 +185,21 @@ export const typography = {
   },
 };
 
-// Spacing
-export const spacing = {
+/**
+ * Spacing values for consistent layout
+ */
+export type SpacingType = {
+  xs: number;
+  sm: number;
+  md: number;
+  lg: number;
+  xl: number;
+  xxl: number;
+  xxxl: number;
+  section: number;
+};
+
+export const spacing: SpacingType = {
   xs: 4,
   sm: 8,
   md: 12,
@@ -107,8 +210,19 @@ export const spacing = {
   section: 40,
 };
 
-// Border radius
-export const borderRadius = {
+/**
+ * Border radius values for consistent UI elements
+ */
+export type BorderRadiusType = {
+  xs: number;
+  sm: number;
+  md: number;
+  lg: number;
+  xl: number;
+  round: number;
+};
+
+export const borderRadius: BorderRadiusType = {
   xs: 4,
   sm: 8,
   md: 12,
@@ -117,8 +231,24 @@ export const borderRadius = {
   round: 999,
 };
 
-// Shadows
-export const shadows = {
+/**
+ * Shadow definitions for elevation effects
+ */
+export type ShadowType = {
+  shadowColor: string;
+  shadowOffset: { width: number; height: number };
+  shadowOpacity: number;
+  shadowRadius: number;
+  elevation: number;
+};
+
+export type ShadowsType = {
+  small: ShadowType;
+  medium: ShadowType;
+  large: ShadowType;
+};
+
+export const shadows: ShadowsType = {
   small: {
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
@@ -142,14 +272,31 @@ export const shadows = {
   },
 };
 
-// Layout
-export const layout = {
+/**
+ * Layout constants for consistent screen layouts
+ */
+export type LayoutType = {
+  screenPadding: number;
+  maxContentWidth: number;
+};
+
+export const layout: LayoutType = {
   screenPadding: spacing.lg,
   maxContentWidth: 1200,
 };
 
-// Z-index
-export const zIndex = {
+/**
+ * Z-index values for consistent stacking
+ */
+export type ZIndexType = {
+  base: number;
+  card: number;
+  modal: number;
+  toast: number;
+  tooltip: number;
+};
+
+export const zIndex: ZIndexType = {
   base: 0,
   card: 10,
   modal: 100,
@@ -157,8 +304,21 @@ export const zIndex = {
   tooltip: 300,
 };
 
-// Export all theme elements
-export default {
+/**
+ * Complete theme type definition
+ */
+export type ThemeType = {
+  colors: ColorPalette;
+  typography: TypographyType;
+  spacing: SpacingType;
+  borderRadius: BorderRadiusType;
+  shadows: ShadowsType;
+  layout: LayoutType;
+  zIndex: ZIndexType;
+};
+
+// Export all theme elements as default theme
+const theme: ThemeType = {
   colors,
   typography,
   spacing,
@@ -166,4 +326,6 @@ export default {
   shadows,
   layout,
   zIndex,
-}; 
+};
+
+export default theme; 
