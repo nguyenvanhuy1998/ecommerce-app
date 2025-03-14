@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  TextInput, 
-  TouchableOpacity, 
-  KeyboardAvoidingView, 
-  Platform,
-  Image,
-  ScrollView,
-  ActivityIndicator
-} from 'react-native';
-import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Link, useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function LoginScreen() {
@@ -23,14 +21,29 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [step, setStep] = useState(1); // Step 1: Email, Step 2: Password
+
+  const handleContinue = () => {
+    // Reset error state
+    setError('');
+
+    // Validate email
+    if (!email) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    // Move to password step
+    setStep(2);
+  };
 
   const handleLogin = async () => {
     // Reset error state
     setError('');
 
-    // Validate inputs
-    if (!email || !password) {
-      setError('Please enter both email and password');
+    // Validate password
+    if (!password) {
+      setError('Please enter your password');
       return;
     }
 
@@ -69,6 +82,7 @@ export default function LoginScreen() {
     },
     inputContainer: {
       marginBottom: 16,
+      position: 'relative',
     },
     input: {
       height: 50,
@@ -149,90 +163,157 @@ export default function LoginScreen() {
     themeToggle: {
       padding: 8,
     },
+    errorText: {
+      color: 'red',
+      marginBottom: 16,
+      textAlign: 'center',
+    },
+    forgotPasswordContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginBottom: 32,
+    },
   });
 
   return (
-    <KeyboardAvoidingView
+    <KeyboardAwareScrollView
       style={dynamicStyles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+      contentContainerStyle={{ 
+        flexGrow: 1, 
+        padding: 24,
+        paddingTop: 60,
+      }}
+      enableOnAndroid={true}
+      enableAutomaticScroll={true}
+      keyboardShouldPersistTaps="handled"
+      extraScrollHeight={Platform.OS === 'ios' ? 30 : 80}
     >
-      <ScrollView 
-        contentContainerStyle={{ 
-          flexGrow: 1, 
-          padding: 24,
-          paddingTop: 60,
-        }}
-      >
-        <View style={dynamicStyles.headerContainer}>
-          <Text style={dynamicStyles.title}>Sign in</Text>
-          <TouchableOpacity 
-            style={dynamicStyles.themeToggle}
-            onPress={toggleTheme}
-            accessibilityLabel="Toggle dark mode"
-          >
-            <Ionicons 
-              name={isDarkMode ? "sunny-outline" : "moon-outline"} 
-              size={24} 
-              color={theme.colors.text} 
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View style={dynamicStyles.inputContainer}>
-          <TextInput
-            style={dynamicStyles.input}
-            placeholder="Email Address"
-            placeholderTextColor={theme.colors.textTertiary}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-        </View>
-
-        <TouchableOpacity
-          style={dynamicStyles.continueButton}
-          onPress={handleLogin}
-          disabled={isLoading}
+      <View style={dynamicStyles.headerContainer}>
+        <Text style={dynamicStyles.title}>Sign in</Text>
+        <TouchableOpacity 
+          style={dynamicStyles.themeToggle}
+          onPress={toggleTheme}
+          accessibilityLabel="Toggle dark mode"
         >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" size="small" />
-          ) : (
-            <Text style={dynamicStyles.buttonText}>Continue</Text>
-          )}
+          <Ionicons 
+            name={isDarkMode ? "sunny-outline" : "moon-outline"} 
+            size={24} 
+            color={theme.colors.text} 
+          />
         </TouchableOpacity>
+      </View>
 
-        <View style={dynamicStyles.createAccountContainer}>
-          <Text style={dynamicStyles.normalText}>Don't have an Account? </Text>
-          <Link href="register" asChild>
-            <TouchableOpacity>
-              <Text style={dynamicStyles.linkText}>Create One</Text>
+      {error ? <Text style={dynamicStyles.errorText}>{error}</Text> : null}
+
+      {step === 1 ? (
+        // Step 1: Email input
+        <>
+          <View style={dynamicStyles.inputContainer}>
+            <TextInput
+              style={dynamicStyles.input}
+              placeholder="Email Address"
+              placeholderTextColor={theme.colors.textTertiary}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoFocus
+            />
+          </View>
+
+          <TouchableOpacity
+            style={dynamicStyles.continueButton}
+            onPress={handleContinue}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={dynamicStyles.buttonText}>Continue</Text>
+            )}
+          </TouchableOpacity>
+
+          <View style={dynamicStyles.createAccountContainer}>
+            <Text style={dynamicStyles.normalText}>Don't have an Account? </Text>
+            <Link href="/(auth)/register" asChild>
+              <TouchableOpacity>
+                <Text style={dynamicStyles.linkText}>Create One</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+
+          <View style={dynamicStyles.dividerContainer}>
+            <View style={dynamicStyles.divider} />
+          </View>
+
+          <View style={dynamicStyles.socialButtonsContainer}>
+            <TouchableOpacity style={dynamicStyles.socialButton}>
+              <Ionicons name="logo-apple" size={24} color={theme.colors.text} style={{ marginRight: 8 }} />
+              <Text style={dynamicStyles.socialButtonText}>Continue With Apple</Text>
             </TouchableOpacity>
-          </Link>
-        </View>
 
-        <View style={dynamicStyles.dividerContainer}>
-          <View style={dynamicStyles.divider} />
-        </View>
+            <TouchableOpacity style={dynamicStyles.socialButton}>
+              <Ionicons name="logo-google" size={24} color={theme.colors.text} style={{ marginRight: 8 }} />
+              <Text style={dynamicStyles.socialButtonText}>Continue With Google</Text>
+            </TouchableOpacity>
 
-        <View style={dynamicStyles.socialButtonsContainer}>
-          <TouchableOpacity style={dynamicStyles.socialButton}>
-            <Ionicons name="logo-apple" size={24} color={theme.colors.text} style={{ marginRight: 8 }} />
-            <Text style={dynamicStyles.socialButtonText}>Continue With Apple</Text>
+            <TouchableOpacity style={dynamicStyles.socialButton}>
+              <Ionicons name="logo-facebook" size={24} color="#1877F2" style={{ marginRight: 8 }} />
+              <Text style={dynamicStyles.socialButtonText}>Continue With Facebook</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        // Step 2: Password input
+        <>
+          <View style={dynamicStyles.inputContainer}>
+            <TextInput
+              style={dynamicStyles.input}
+              placeholder="Password"
+              placeholderTextColor={theme.colors.textTertiary}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              autoFocus
+            />
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                right: 16,
+                top: 13,
+              }}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Ionicons
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                size={24}
+                color={theme.colors.textSecondary}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={dynamicStyles.continueButton}
+            onPress={handleLogin}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={dynamicStyles.buttonText}>Continue</Text>
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={dynamicStyles.socialButton}>
-            <Ionicons name="logo-google" size={24} color={theme.colors.text} style={{ marginRight: 8 }} />
-            <Text style={dynamicStyles.socialButtonText}>Continue With Google</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={dynamicStyles.socialButton}>
-            <Ionicons name="logo-facebook" size={24} color="#1877F2" style={{ marginRight: 8 }} />
-            <Text style={dynamicStyles.socialButtonText}>Continue With Facebook</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <View style={dynamicStyles.forgotPasswordContainer}>
+            <Text style={dynamicStyles.normalText}>Forgot Password? </Text>
+            <Link href="/(auth)/register" asChild>
+              <TouchableOpacity>
+                <Text style={dynamicStyles.linkText}>Reset</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+        </>
+      )}
+    </KeyboardAwareScrollView>
   );
 } 
