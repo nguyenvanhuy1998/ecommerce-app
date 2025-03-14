@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
+import { AuthProvider } from '../context/AuthContext';
 import { useCallback, useMemo } from 'react';
 import { View, Text } from 'react-native';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -41,7 +42,9 @@ export default function RootLayout() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onError={handleError}>
       <ThemeProvider>
-        <RootLayoutContent />
+        <AuthProvider>
+          <RootLayoutContent />
+        </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
