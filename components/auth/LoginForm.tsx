@@ -8,8 +8,11 @@ import {
 } from 'react-native';
 import { Link } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
-import Button from '../ui/Button';
-import Input from '../ui/Input';
+import FormButton from '../ui/FormButton';
+import FormInput from '../ui/FormInput';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { loginSchema, LoginFormData } from '../../validation/authSchemas';
 
 interface LoginFormProps {
   onLogin: (email: string, password: string) => Promise<void>;
@@ -23,47 +26,45 @@ export default function LoginForm({
   style,
 }: LoginFormProps) {
   const { theme } = useTheme();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [step, setStep] = useState(1); // Step 1: Email, Step 2: Password
+  const [formError, setFormError] = useState('');
+
+  // Khởi tạo React Hook Form
+  const formMethods = useForm<LoginFormData>({
+    resolver: yupResolver(loginSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      email: '',
+      password: '',
+    }
+  });
+
+  const { control, handleSubmit, getValues, formState: { errors } } = formMethods;
 
   const handleContinue = () => {
     // Reset error state
-    setError('');
+    setFormError('');
 
-    // Validate email
-    if (!email) {
-      setError('Please enter your email address');
-      return;
+    // Kiểm tra email
+    const emailValue = getValues('email');
+    if (!emailValue) {
+      return; // Validation sẽ được xử lý bởi yup
     }
 
-    // Simple email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
-      return;
-    }
-
-    // Move to password step
+    // Chuyển sang bước nhập mật khẩu
     setStep(2);
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (data: LoginFormData) => {
     // Reset error state
-    setError('');
-
-    // Validate password
-    if (!password) {
-      setError('Please enter your password');
-      return;
-    }
+    setFormError('');
 
     try {
-      await onLogin(email, password);
+      // Gọi hàm đăng nhập từ context
+      await onLogin(data.email, data.password);
     } catch (err) {
-      setError('An error occurred during login. Please try again.');
+      setFormError('Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.');
       console.error('Login error:', err);
     }
   };
@@ -99,38 +100,40 @@ export default function LoginForm({
 
   return (
     <View style={[dynamicStyles.container, style]}>
-      {error ? <Text style={dynamicStyles.errorText}>{error}</Text> : null}
+      {formError ? <Text style={dynamicStyles.errorText}>{formError}</Text> : null}
 
       {step === 1 ? (
         // Step 1: Email input
         <>
-          <Input
+          <FormInput
+            name="email"
+            control={control}
             placeholder="Email Address"
-            value={email}
-            onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
             autoFocus
           />
 
           <View style={dynamicStyles.buttonContainer}>
-            <Button
+            <FormButton
               title="Continue"
               onPress={handleContinue}
+              formMethods={formMethods}
               loading={isLoading}
-              disabled={isLoading}
+              disabled={isLoading || !!errors.email}
               size="large"
               fullWidth
+              disableIfInvalid={false}
             />
           </View>
         </>
       ) : (
         // Step 2: Password input
         <>
-          <Input
+          <FormInput
+            name="password"
+            control={control}
             placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
             secureTextEntry={!showPassword}
             rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
             onRightIconPress={() => setShowPassword(!showPassword)}
@@ -138,13 +141,14 @@ export default function LoginForm({
           />
 
           <View style={dynamicStyles.buttonContainer}>
-            <Button
+            <FormButton
               title="Continue"
-              onPress={handleLogin}
+              onPress={handleSubmit(handleLogin)}
+              formMethods={formMethods}
               loading={isLoading}
-              disabled={isLoading}
               size="large"
               fullWidth
+              disableIfInvalid={false}
             />
           </View>
 
