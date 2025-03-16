@@ -70,7 +70,6 @@ function RootLayoutContent() {
 
   // Define screen configurations
   const screens = useMemo(() => [
-    { name: 'index', options: { headerShown: false } },
     { name: '(auth)', options: { headerShown: false } },
     { name: '(tabs)', options: { headerShown: false } },
     { name: 'product/[id]', options: { title: 'Product Details' } },

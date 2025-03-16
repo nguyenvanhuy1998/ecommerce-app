@@ -83,8 +83,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (state.isAuthenticated && inAuthGroup) {
       // Redirect authenticated users from auth screens to main app
       router.replace('/(tabs)/home');
-    } else if (!state.isAuthenticated && !inAuthGroup) {
-      // Redirect unauthenticated users to login
+    } else if (!state.isAuthenticated && !inAuthGroup && segments[0] !== '(tabs)') {
+      // Redirect unauthenticated users directly to login, skipping onboarding
       router.replace('/(auth)/login');
     }
   }, [state.isAuthenticated, state.isLoading, segments, router]);
