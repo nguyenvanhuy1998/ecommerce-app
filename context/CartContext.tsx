@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import * as SecureStore from 'expo-secure-store';
 
 // Define the cart item type
 export interface CartItem {
@@ -27,6 +28,9 @@ interface CartContextType {
 // Create the cart context
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// Sample initial cart items for demo purposes
+const initialCartItems: CartItem[] = [];
+
 // Cart provider props
 interface CartProviderProps {
   children: ReactNode;
@@ -42,37 +46,43 @@ export function CartProvider({
 }: CartProviderProps) {
   // State for cart items
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load cart from storage on mount
+  // Load cart items from storage
   useEffect(() => {
-    const loadCart = async () => {
+    const loadCartItems = async () => {
       try {
-        // In a real app, you would load from AsyncStorage or similar
-        // const storedCart = await AsyncStorage.getItem('cart');
-        // if (storedCart) {
-        //   setItems(JSON.parse(storedCart));
-        // }
+        // In a real app, you would load from SecureStore or similar
+        // const storedCart = await SecureStore.getItemAsync('cart');
+        
+        // For demo purposes, we're using a static cart
+        setItems(initialCartItems);
+        setIsLoading(false);
       } catch (error) {
-        console.error('Failed to load cart from storage', error);
+        console.error('Error loading cart items:', error);
+        setIsLoading(false);
       }
     };
-
-    loadCart();
+    
+    loadCartItems();
   }, []);
-
-  // Save cart to storage when it changes
+  
+  // Save cart items to storage whenever they change
   useEffect(() => {
-    const saveCart = async () => {
+    const saveCartItems = async () => {
       try {
-        // In a real app, you would save to AsyncStorage or similar
-        // await AsyncStorage.setItem('cart', JSON.stringify(items));
+        // In a real app, you would save to SecureStore or similar
+        // await SecureStore.setItemAsync('cart', JSON.stringify(items));
       } catch (error) {
-        console.error('Failed to save cart to storage', error);
+        console.error('Error saving cart items:', error);
       }
     };
-
-    saveCart();
-  }, [items]);
+    
+    // Only save if cart is not in initial loading state
+    if (!isLoading) {
+      saveCartItems();
+    }
+  }, [items, isLoading]);
 
   // Add an item to the cart
   const addItem = (item: Omit<CartItem, 'id' | 'quantity'>) => {

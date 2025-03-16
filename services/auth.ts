@@ -1,7 +1,7 @@
 /**
  * Authentication service for handling user authentication
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 // Storage keys
 const AUTH_TOKEN_KEY = 'auth_token';
@@ -51,9 +51,8 @@ export const loginWithEmailPassword = async (
   const token = 'demo-token-' + Math.random().toString(36).substring(2);
   
   // Store auth data in secure storage
-  // In a real app, you would use a secure storage solution like expo-secure-store
-  await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
-  await AsyncStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+  await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
+  await SecureStore.setItemAsync(AUTH_USER_KEY, JSON.stringify(user));
   
   return { user, token };
 };
@@ -84,8 +83,8 @@ export const loginWithSocialProvider = async (
   const token = `${provider}-token-` + Math.random().toString(36).substring(2);
   
   // Store auth data in secure storage
-  await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
-  await AsyncStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+  await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
+  await SecureStore.setItemAsync(AUTH_USER_KEY, JSON.stringify(user));
   
   return { user, token };
 };
@@ -97,8 +96,8 @@ export const logout = async (): Promise<void> => {
   // In a real app, you might need to call an API to invalidate the token
   
   // Clear auth data from secure storage
-  await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
-  await AsyncStorage.removeItem(AUTH_USER_KEY);
+  await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
+  await SecureStore.deleteItemAsync(AUTH_USER_KEY);
 };
 
 /**
@@ -106,7 +105,7 @@ export const logout = async (): Promise<void> => {
  * @returns Current user or null if not authenticated
  */
 export const getCurrentUser = async (): Promise<User | null> => {
-  const userJson = await AsyncStorage.getItem(AUTH_USER_KEY);
+  const userJson = await SecureStore.getItemAsync(AUTH_USER_KEY);
   if (!userJson) return null;
   
   try {
@@ -122,7 +121,7 @@ export const getCurrentUser = async (): Promise<User | null> => {
  * @returns Boolean indicating if user is authenticated
  */
 export const isAuthenticated = async (): Promise<boolean> => {
-  const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+  const token = await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
   return !!token;
 };
 
@@ -131,5 +130,5 @@ export const isAuthenticated = async (): Promise<boolean> => {
  * @returns Current auth token or null if not authenticated
  */
 export const getAuthToken = async (): Promise<string | null> => {
-  return await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+  return await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
 }; 
