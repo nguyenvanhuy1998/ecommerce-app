@@ -4,52 +4,52 @@ import * as yup from 'yup';
 export const loginSchema = yup.object({
   email: yup
     .string()
-    .required('Email là bắt buộc')
-    .email('Email không hợp lệ'),
+    .required('Email is required')
+    .email('Invalid email format'),
   password: yup
     .string()
-    .required('Mật khẩu là bắt buộc')
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
 });
 
 // Schema cho form đăng ký
 export const registerSchema = yup.object({
   name: yup
     .string()
-    .required('Tên là bắt buộc')
-    .min(2, 'Tên phải có ít nhất 2 ký tự'),
+    .required('Name is required')
+    .min(2, 'Name must be at least 2 characters'),
   email: yup
     .string()
-    .required('Email là bắt buộc')
-    .email('Email không hợp lệ'),
+    .required('Email is required')
+    .email('Invalid email format'),
   password: yup
     .string()
-    .required('Mật khẩu là bắt buộc')
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
   confirmPassword: yup
     .string()
-    .required('Xác nhận mật khẩu là bắt buộc')
-    .oneOf([yup.ref('password')], 'Mật khẩu không khớp'),
+    .required('Confirm password is required')
+    .oneOf([yup.ref('password')], 'Passwords do not match'),
 });
 
 // Schema cho form đặt lại mật khẩu
 export const resetPasswordSchema = yup.object({
   email: yup
     .string()
-    .required('Email là bắt buộc')
-    .email('Email không hợp lệ'),
+    .required('Email is required')
+    .email('Invalid email format'),
 });
 
 // Schema cho form đặt lại mật khẩu mới
 export const newPasswordSchema = yup.object({
   password: yup
     .string()
-    .required('Mật khẩu là bắt buộc')
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
   confirmPassword: yup
     .string()
-    .required('Xác nhận mật khẩu là bắt buộc')
-    .oneOf([yup.ref('password')], 'Mật khẩu không khớp'),
+    .required('Confirm password is required')
+    .oneOf([yup.ref('password')], 'Passwords do not match'),
 });
 
 // Định nghĩa các kiểu dữ liệu từ schema
