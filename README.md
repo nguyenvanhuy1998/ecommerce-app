@@ -115,6 +115,37 @@ In the output, you'll find options to open the app in a:
 - **User Profile**: Manage personal information and preferences
 - **Responsive Design**: Works on mobile and tablet devices
 
+## Authentication Flow
+
+The app implements a robust authentication flow using Expo Router's declarative navigation:
+
+### Key Components
+
+- **AuthGuard**: A reusable component that protects routes based on authentication state
+  - `requireAuth`: When true, requires authentication to access the route
+  - `redirectTo`: Where to redirect if authentication check fails
+
+### Authentication Flow
+
+1. **Initial Load**: The app checks authentication status on startup
+   - If authenticated: Redirects to the home tab
+   - If not authenticated: Redirects to the login screen
+
+2. **Protected Routes**: Routes that require authentication (like product details, checkout)
+   - Wrapped with `<AuthGuard requireAuth={true} redirectTo="/(auth)/login">`
+   - Automatically redirects unauthenticated users to login
+
+3. **Auth Routes**: Routes that should only be accessible to unauthenticated users
+   - Wrapped with `<AuthGuard requireAuth={false} redirectTo="/(tabs)/home">`
+   - Automatically redirects authenticated users to home
+
+### Benefits
+
+- **Declarative Navigation**: Uses Expo Router's `Redirect` component for cleaner code
+- **Centralized Logic**: Authentication checks are handled by the reusable AuthGuard
+- **Improved Performance**: Avoids unnecessary re-renders with declarative redirects
+- **Better User Experience**: Immediate redirects without flash of incorrect content
+
 ## Development Guidelines
 
 - Use TypeScript for type safety

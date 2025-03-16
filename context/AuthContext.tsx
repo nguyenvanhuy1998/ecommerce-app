@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter, useSegments } from 'expo-router';
 import * as AuthService from '../services/auth';
 import { User, AuthState } from '../services/auth';
 
@@ -34,8 +33,6 @@ interface AuthProviderProps {
 // Auth provider component
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, setState] = useState<AuthState>(defaultAuthState);
-  const router = useRouter();
-  const segments = useSegments();
 
   // Check if user is authenticated on mount
   useEffect(() => {
@@ -70,24 +67,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     checkAuth();
   }, []);
-
-  // Handle routing based on auth state
-  useEffect(() => {
-    if (state.isLoading) {
-      // Still loading, don't redirect yet
-      return;
-    }
-
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (state.isAuthenticated && inAuthGroup) {
-      // Redirect authenticated users from auth screens to main app
-      router.replace('/(tabs)/home');
-    } else if (!state.isAuthenticated && !inAuthGroup && segments[0] !== '(tabs)') {
-      // Redirect unauthenticated users directly to login, skipping onboarding
-      router.replace('/(auth)/login');
-    }
-  }, [state.isAuthenticated, state.isLoading, segments, router]);
 
   // Login function
   const login = async (email: string, password: string) => {

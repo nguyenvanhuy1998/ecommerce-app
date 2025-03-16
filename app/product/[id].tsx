@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AuthGuard from '../../components/auth/AuthGuard';
 
 // Mock product data - in a real app, you would fetch this from an API
 const products = {
@@ -50,7 +51,7 @@ const products = {
   },
 };
 
-export default function ProductDetailScreen() {
+function ProductDetailContent() {
   const { id } = useLocalSearchParams();
   const productId = typeof id === 'string' ? id : '1';
   const product = products[productId] || products['1'];
@@ -116,6 +117,14 @@ export default function ProductDetailScreen() {
         </TouchableOpacity>
       </View>
     </ScrollView>
+  );
+}
+
+export default function ProductDetailScreen() {
+  return (
+    <AuthGuard requireAuth={true} redirectTo="/(auth)/login">
+      <ProductDetailContent />
+    </AuthGuard>
   );
 }
 
