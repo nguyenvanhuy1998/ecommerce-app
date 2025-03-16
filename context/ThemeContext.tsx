@@ -7,8 +7,15 @@ import {
     useMemo,
     useCallback,
 } from "react";
+import * as SecureStore from 'expo-secure-store';
+import { useColorScheme, AppState, AppStateStatus } from "react-native";
 import defaultTheme from "../constants/theme";
-import { useColorScheme } from "react-native";
+
+// Storage key for theme preference
+const THEME_PREFERENCE_KEY = 'theme_preference';
+
+// Theme preference options
+export type ThemePreference = 'light' | 'dark' | 'system';
 
 // Define theme type based on the default theme structure
 export type Theme = typeof defaultTheme;
@@ -50,54 +57,94 @@ const darkTheme: Theme = {
 type ThemeContextType = {
     theme: Theme;
     isDarkMode: boolean;
-    toggleTheme: () => void;
-    setDarkMode: (isDark: boolean) => void;
+    themePreference: ThemePreference;
+    toggleTheme: () => Promise<void>;
+    setThemePreference: (preference: ThemePreference) => Promise<void>;
 };
 
 // Default context value
 const defaultContextValue: ThemeContextType = {
     theme: lightTheme,
     isDarkMode: false,
-    toggleTheme: () => {},
-    setDarkMode: () => {},
+    themePreference: 'system',
+    toggleTheme: async () => {},
+    setThemePreference: async () => {},
 };
 
 export const ThemeContext = createContext<ThemeContextType>(defaultContextValue);
 
 interface ThemeProviderProps {
     children: ReactNode;
-    initialTheme?: 'light' | 'dark' | 'system';
 }
 
 // Theme provider component
-export const ThemeProvider = ({ 
-    children, 
-    initialTheme = 'system' 
-}: ThemeProviderProps) => {
-    const colorScheme = useColorScheme();
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        if (initialTheme === 'system') {
-            return colorScheme === "dark";
+export const ThemeProvider = ({ children }: ThemeProviderProps) => {
+    const systemColorScheme = useColorScheme();
+    const [themePreference, setThemePreferenceState] = useState<ThemePreference>('system');
+    const [isLoading, setIsLoading] = useState(true);
+    
+    // Determine if dark mode should be active based on preference and system setting
+    const isDarkMode = useMemo(() => {
+        if (themePreference === 'system') {
+            return systemColorScheme === 'dark';
         }
-        return initialTheme === 'dark';
-    });
+        return themePreference === 'dark';
+    }, [themePreference, systemColorScheme]);
 
-    // Update theme when system theme changes
+    // Load saved theme preference on mount
     useEffect(() => {
-        if (initialTheme === 'system') {
-            setIsDarkMode(colorScheme === "dark");
+        const loadThemePreference = async () => {
+            try {
+                const savedPreference = await SecureStore.getItemAsync(THEME_PREFERENCE_KEY);
+                if (savedPreference !== null) {
+                    setThemePreferenceState(savedPreference as ThemePreference);
+                }
+            } catch (error) {
+                console.error('Error loading theme preference:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadThemePreference();
+    }, []);
+
+    // Monitor app state to detect system theme changes when app comes to foreground
+    useEffect(() => {
+        const handleAppStateChange = (nextAppState: AppStateStatus) => {
+            if (nextAppState === 'active' && themePreference === 'system') {
+                // Force re-evaluation of system theme when app becomes active
+                const currentSystemTheme = systemColorScheme;
+                console.log('App became active, system theme:', currentSystemTheme);
+            }
+        };
+
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+        return () => {
+            subscription.remove();
+        };
+    }, [systemColorScheme, themePreference]);
+
+    // Save theme preference to secure storage
+    const saveThemePreference = async (preference: ThemePreference) => {
+        try {
+            await SecureStore.setItemAsync(THEME_PREFERENCE_KEY, preference);
+        } catch (error) {
+            console.error('Error saving theme preference:', error);
         }
-    }, [colorScheme, initialTheme]);
+    };
 
-    // Toggle theme function
-    const toggleTheme = useCallback(() => {
-        setIsDarkMode(prevMode => !prevMode);
+    // Set theme preference with persistence
+    const setThemePreference = useCallback(async (preference: ThemePreference) => {
+        setThemePreferenceState(preference);
+        await saveThemePreference(preference);
     }, []);
 
-    // Set dark mode directly
-    const setDarkMode = useCallback((isDark: boolean) => {
-        setIsDarkMode(isDark);
-    }, []);
+    // Toggle between light and dark theme
+    const toggleTheme = useCallback(async () => {
+        const newPreference = isDarkMode ? 'light' : 'dark';
+        await setThemePreference(newPreference);
+    }, [isDarkMode, setThemePreference]);
 
     // Memoize theme to prevent unnecessary re-renders
     const theme = useMemo(() => 
@@ -109,9 +156,15 @@ export const ThemeProvider = ({
     const contextValue = useMemo(() => ({
         theme,
         isDarkMode,
+        themePreference,
         toggleTheme,
-        setDarkMode,
-    }), [theme, isDarkMode, toggleTheme, setDarkMode]);
+        setThemePreference,
+    }), [theme, isDarkMode, themePreference, toggleTheme, setThemePreference]);
+
+    // Show nothing while loading to prevent theme flash
+    if (isLoading) {
+        return null;
+    }
 
     return (
         <ThemeContext.Provider value={contextValue}>

@@ -28,6 +28,9 @@ interface CartContextType {
 // Create the cart context
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// Cart storage key
+const CART_STORAGE_KEY = 'secure_cart_items';
+
 // Sample initial cart items for demo purposes
 const initialCartItems: CartItem[] = [];
 
@@ -52,11 +55,15 @@ export function CartProvider({
   useEffect(() => {
     const loadCartItems = async () => {
       try {
-        // In a real app, you would load from SecureStore or similar
-        // const storedCart = await SecureStore.getItemAsync('cart');
+        // Load cart items from SecureStore
+        const storedCart = await SecureStore.getItemAsync(CART_STORAGE_KEY);
         
-        // For demo purposes, we're using a static cart
-        setItems(initialCartItems);
+        if (storedCart) {
+          setItems(JSON.parse(storedCart));
+        } else {
+          // For demo purposes, we're using a static cart if nothing is stored
+          setItems(initialCartItems);
+        }
         setIsLoading(false);
       } catch (error) {
         console.error('Error loading cart items:', error);
@@ -71,8 +78,8 @@ export function CartProvider({
   useEffect(() => {
     const saveCartItems = async () => {
       try {
-        // In a real app, you would save to SecureStore or similar
-        // await SecureStore.setItemAsync('cart', JSON.stringify(items));
+        // Save cart items to SecureStore
+        await SecureStore.setItemAsync(CART_STORAGE_KEY, JSON.stringify(items));
       } catch (error) {
         console.error('Error saving cart items:', error);
       }

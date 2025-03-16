@@ -3,8 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from '../context/ThemeContext';
 import { AuthProvider } from '../context/AuthContext';
-import { useCallback, useMemo } from 'react';
-import { View, Text } from 'react-native';
+import { useCallback, useMemo, useEffect } from 'react';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { ErrorBoundary } from 'react-error-boundary';
 
 /**
@@ -26,6 +26,17 @@ function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetError
       >
         Try again
       </Text>
+    </View>
+  );
+}
+
+/**
+ * Loading component to display while theme is loading
+ */
+function LoadingScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" color="#8E6CEF" />
     </View>
   );
 }
@@ -76,6 +87,12 @@ function RootLayoutContent() {
     { name: 'checkout', options: { title: 'Checkout' } },
     { name: 'orders', options: { title: 'My Orders' } },
   ], []);
+
+  // Update status bar style when theme changes
+  useEffect(() => {
+    // Additional theme-related side effects can be handled here
+    console.log('Theme changed:', isDarkMode ? 'dark' : 'light');
+  }, [isDarkMode]);
 
   return (
     <SafeAreaProvider>
