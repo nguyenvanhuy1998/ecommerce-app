@@ -6,9 +6,12 @@ import {
   TouchableOpacityProps,
   ViewStyle,
   TextStyle,
+  View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { spacing, typography } from '../../constants';
+import { moderateScale } from '../../utils/responsive';
 
 interface SocialButtonProps extends TouchableOpacityProps {
   provider: 'apple' | 'google' | 'facebook';
@@ -63,18 +66,32 @@ export default function SocialButton({
     button: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
       borderWidth: 1,
       borderColor: theme.colors.border,
-      borderRadius: 25,
-      height: 56,
+      borderRadius: spacing.borderRadius.pill,
+      height: spacing.buttonHeight,
       backgroundColor: isDarkMode ? '#342F3F' : theme.colors.card,
-      marginBottom: 16,
+      marginBottom: spacing.md,
+      position: 'relative',
+      paddingHorizontal: spacing.sm,
+    },
+    iconContainer: {
+      position: 'absolute',
+      left: spacing.sm,
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    textContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     buttonText: {
       color: theme.colors.text,
-      fontSize: 16,
+      fontSize: typography.fontSize.md,
       fontWeight: '500',
+      textAlign: 'center',
     },
   });
 
@@ -84,15 +101,18 @@ export default function SocialButton({
       activeOpacity={0.7}
       {...rest}
     >
-      <Ionicons
-        name={getIconName()}
-        size={24}
-        color={getIconColor()}
-        style={{ marginRight: 12 }}
-      />
-      <Text style={[dynamicStyles.buttonText, textStyle]}>
-        {title || getDefaultTitle()}
-      </Text>
+      <View style={dynamicStyles.iconContainer}>
+        <Ionicons
+          name={getIconName()}
+          size={spacing.iconSize.medium}
+          color={getIconColor()}
+        />
+      </View>
+      <View style={dynamicStyles.textContainer}>
+        <Text style={[dynamicStyles.buttonText, textStyle]}>
+          {title || getDefaultTitle()}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 } 
