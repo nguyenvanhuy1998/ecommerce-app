@@ -32,28 +32,6 @@ export const registerSchema = yup.object({
     .oneOf([yup.ref('password')], 'Passwords do not match'),
 });
 
-// Schema cho form đặt lại mật khẩu
-export const resetPasswordSchema = yup.object({
-  email: yup
-    .string()
-    .required('Email is required')
-    .email('Invalid email format'),
-});
-
-// Schema cho form đặt lại mật khẩu mới
-export const newPasswordSchema = yup.object({
-  password: yup
-    .string()
-    .required('Password is required')
-    .min(6, 'Password must be at least 6 characters'),
-  confirmPassword: yup
-    .string()
-    .required('Confirm password is required')
-    .oneOf([yup.ref('password')], 'Passwords do not match'),
-});
-
 // Định nghĩa các kiểu dữ liệu từ schema
 export type LoginFormData = yup.InferType<typeof loginSchema>;
-export type RegisterFormData = yup.InferType<typeof registerSchema>;
-export type ResetPasswordFormData = yup.InferType<typeof resetPasswordSchema>;
-export type NewPasswordFormData = yup.InferType<typeof newPasswordSchema>; 
+export type RegisterFormData = yup.InferType<typeof registerSchema>; 

@@ -1,4 +1,5 @@
 // Theme constants for the e-commerce app
+import { scaleFontSize } from "../utils/responsive";
 
 /**
  * Color palette for the application
@@ -108,6 +109,56 @@ export const colors: ColorPalette = {
 };
 
 /**
+ * Spacing values for consistent layout
+ */
+export type SpacingType = {
+  none: number;
+  xs: number;
+  sm: number;
+  md: number;
+  lg: number;
+  xl: number;
+  xxl: number;
+  xxxl: number;
+  screenPadding: number;
+  sectionPadding: number;
+};
+
+export const spacing: SpacingType = {
+  none: 0,
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 24,
+  xxxl: 32,
+  screenPadding: 16,
+  sectionPadding: 24,
+};
+
+/**
+ * Border radius values for consistent UI elements
+ */
+export type BorderRadiusType = {
+  xs: number;
+  sm: number;
+  md: number;
+  lg: number;
+  pill: number;
+  circle: number;
+};
+
+export const borderRadius: BorderRadiusType = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  pill: 25,
+  circle: 9999,
+};
+
+/**
  * Typography definitions for the application
  */
 export type TypographyType = {
@@ -124,7 +175,6 @@ export type TypographyType = {
     xl: number;
     xxl: number;
     xxxl: number;
-    display: number;
   };
   fontWeight: {
     regular: string;
@@ -133,14 +183,18 @@ export type TypographyType = {
     bold: string;
   };
   lineHeight: {
-    xs: number;
-    sm: number;
-    md: number;
-    lg: number;
-    xl: number;
-    xxl: number;
-    xxxl: number;
-    display: number;
+    tight: number;
+    normal: number;
+    loose: number;
+  };
+  textVariants: {
+    h1: object;
+    h2: object;
+    h3: object;
+    body1: object;
+    body2: object;
+    button: object;
+    caption: object;
   };
 };
 
@@ -154,14 +208,13 @@ export const typography: TypographyType = {
 
   // Font sizes
   fontSize: {
-    xs: 10,
-    sm: 12,
-    md: 14,
-    lg: 16,
-    xl: 18,
-    xxl: 20,
-    xxxl: 24,
-    display: 32,
+    xs: scaleFontSize(12),
+    sm: scaleFontSize(14),
+    md: scaleFontSize(16),
+    lg: scaleFontSize(18),
+    xl: scaleFontSize(20),
+    xxl: scaleFontSize(24),
+    xxxl: scaleFontSize(32),
   },
 
   // Font weights
@@ -174,61 +227,49 @@ export const typography: TypographyType = {
 
   // Line heights
   lineHeight: {
-    xs: 14,
-    sm: 18,
-    md: 22,
-    lg: 24,
-    xl: 28,
-    xxl: 32,
-    xxxl: 38,
-    display: 48,
+    tight: 1.2,
+    normal: 1.5,
+    loose: 1.8,
   },
-};
 
-/**
- * Spacing values for consistent layout
- */
-export type SpacingType = {
-  xs: number;
-  sm: number;
-  md: number;
-  lg: number;
-  xl: number;
-  xxl: number;
-  xxxl: number;
-  section: number;
-};
-
-export const spacing: SpacingType = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  xxl: 24,
-  xxxl: 32,
-  section: 40,
-};
-
-/**
- * Border radius values for consistent UI elements
- */
-export type BorderRadiusType = {
-  xs: number;
-  sm: number;
-  md: number;
-  lg: number;
-  xl: number;
-  round: number;
-};
-
-export const borderRadius: BorderRadiusType = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
-  round: 999,
+  // Text variants
+  textVariants: {
+    h1: {
+      fontSize: scaleFontSize(32),
+      fontWeight: '700',
+      lineHeight: 1.2,
+    },
+    h2: {
+      fontSize: scaleFontSize(24),
+      fontWeight: '700',
+      lineHeight: 1.2,
+    },
+    h3: {
+      fontSize: scaleFontSize(20),
+      fontWeight: '600',
+      lineHeight: 1.2,
+    },
+    body1: {
+      fontSize: scaleFontSize(16),
+      fontWeight: '400',
+      lineHeight: 1.5,
+    },
+    body2: {
+      fontSize: scaleFontSize(14),
+      fontWeight: '400',
+      lineHeight: 1.5,
+    },
+    button: {
+      fontSize: scaleFontSize(16),
+      fontWeight: '600',
+      lineHeight: 1.5,
+    },
+    caption: {
+      fontSize: scaleFontSize(12),
+      fontWeight: '400',
+      lineHeight: 1.5,
+    },
+  },
 };
 
 /**
@@ -243,46 +284,37 @@ export type ShadowType = {
 };
 
 export type ShadowsType = {
-  small: ShadowType;
-  medium: ShadowType;
-  large: ShadowType;
+  none: { elevation: number };
+  sm: ShadowType;
+  md: ShadowType;
+  lg: ShadowType;
 };
 
 export const shadows: ShadowsType = {
-  small: {
+  none: {
+    elevation: 0,
+  },
+  sm: {
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
   },
-  medium: {
+  md: {
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
   },
-  large: {
+  lg: {
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 16,
     elevation: 8,
   },
-};
-
-/**
- * Layout constants for consistent screen layouts
- */
-export type LayoutType = {
-  screenPadding: number;
-  maxContentWidth: number;
-};
-
-export const layout: LayoutType = {
-  screenPadding: spacing.lg,
-  maxContentWidth: 1200,
 };
 
 /**
@@ -309,22 +341,20 @@ export const zIndex: ZIndexType = {
  */
 export type ThemeType = {
   colors: ColorPalette;
-  typography: TypographyType;
   spacing: SpacingType;
   borderRadius: BorderRadiusType;
+  typography: TypographyType;
   shadows: ShadowsType;
-  layout: LayoutType;
   zIndex: ZIndexType;
 };
 
 // Export all theme elements as default theme
 const theme: ThemeType = {
   colors,
-  typography,
   spacing,
   borderRadius,
+  typography,
   shadows,
-  layout,
   zIndex,
 };
 

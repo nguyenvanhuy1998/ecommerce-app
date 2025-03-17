@@ -5,14 +5,12 @@ import {
   View, 
   TextInput, 
   TouchableOpacity, 
-  KeyboardAvoidingView, 
-  Platform,
-  ScrollView,
   ActivityIndicator
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { Container, Row, Spacer, ThemeToggleButton } from '../../components/ui';
+import { spacing } from '../../constants';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -54,130 +52,142 @@ export default function RegisterScreen() {
     }
   };
 
-  // Create styles with theme
-  const dynamicStyles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
-    },
-    title: {
-      fontSize: 32,
-      fontWeight: 'bold',
-      color: theme.colors.text,
-      marginBottom: 30,
-    },
-    inputContainer: {
-      marginBottom: 16,
-    },
-    input: {
-      height: 50,
-      backgroundColor: theme.colors.input,
-      borderRadius: 8,
-      paddingHorizontal: 16,
-      fontSize: 16,
-      color: theme.colors.text,
-      width: '100%',
-    },
-    continueButton: {
-      backgroundColor: theme.colors.primary,
-      borderRadius: 25,
-      height: 56,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 24,
-      marginBottom: 32,
-    },
-    buttonText: {
-      color: '#FFFFFF',
-      fontSize: 16,
-      fontWeight: '600',
-    },
-    loginContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      marginBottom: 32,
-    },
-    normalText: {
-      color: theme.colors.textSecondary,
-      fontSize: 14,
-    },
-    linkText: {
-      color: theme.colors.primary,
-      fontSize: 14,
-      fontWeight: '600',
-    },
-  });
+  // Header component với title
+  const header = (
+    <>
+      <Row
+        justify="space-between"
+        align="center"
+        style={styles.headerContainer}
+      >
+        <Text style={[styles.title, { color: theme.colors.text }]}>Create Account</Text>
+        <ThemeToggleButton size={24} />
+      </Row>
+
+      {error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
+    </>
+  );
 
   return (
-    <KeyboardAvoidingView
-      style={dynamicStyles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+    <Container 
+      keyboardAware={true}
+      scrollable={true}
+      padding={spacing.lg}
+      header={header}
+      contentContainerStyle={styles.contentContainer}
+      backgroundColor={theme.colors.background}
     >
-      <ScrollView 
-        contentContainerStyle={{ 
-          flexGrow: 1, 
-          padding: 24,
-          paddingTop: 60,
-        }}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, { backgroundColor: theme.colors.input, color: theme.colors.text }]}
+          placeholder="Full Name"
+          placeholderTextColor={theme.colors.textTertiary}
+          value={name}
+          onChangeText={setName}
+          autoCapitalize="words"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, { backgroundColor: theme.colors.input, color: theme.colors.text }]}
+          placeholder="Email Address"
+          placeholderTextColor={theme.colors.textTertiary}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
+      </View>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, { backgroundColor: theme.colors.input, color: theme.colors.text }]}
+          placeholder="Password"
+          placeholderTextColor={theme.colors.textTertiary}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+      </View>
+
+      <TouchableOpacity
+        style={[styles.continueButton, { backgroundColor: theme.colors.primary }]}
+        onPress={handleRegister}
+        disabled={isLoading}
       >
-        <Text style={dynamicStyles.title}>Create Account</Text>
+        {isLoading ? (
+          <ActivityIndicator color="#fff" size="small" />
+        ) : (
+          <Text style={styles.buttonText}>Create Account</Text>
+        )}
+      </TouchableOpacity>
 
-        <View style={dynamicStyles.inputContainer}>
-          <TextInput
-            style={dynamicStyles.input}
-            placeholder="Full Name"
-            placeholderTextColor={theme.colors.textTertiary}
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
-          />
-        </View>
-
-        <View style={dynamicStyles.inputContainer}>
-          <TextInput
-            style={dynamicStyles.input}
-            placeholder="Email Address"
-            placeholderTextColor={theme.colors.textTertiary}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-        </View>
-
-        <View style={dynamicStyles.inputContainer}>
-          <TextInput
-            style={dynamicStyles.input}
-            placeholder="Password"
-            placeholderTextColor={theme.colors.textTertiary}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
-
-        <TouchableOpacity
-          style={dynamicStyles.continueButton}
-          onPress={handleRegister}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" size="small" />
-          ) : (
-            <Text style={dynamicStyles.buttonText}>Create Account</Text>
-          )}
-        </TouchableOpacity>
-
-        <View style={dynamicStyles.loginContainer}>
-          <Text style={dynamicStyles.normalText}>Already have an account? </Text>
-          <Link href="/(auth)/login" asChild>
-            <TouchableOpacity>
-              <Text style={dynamicStyles.linkText}>Sign In</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <View style={styles.loginContainer}>
+        <Text style={[styles.normalText, { color: theme.colors.textSecondary }]}>Already have an account? </Text>
+        <Link href="/(auth)/login" asChild>
+          <TouchableOpacity>
+            <Text style={[styles.linkText, { color: theme.colors.primary }]}>Sign In</Text>
+          </TouchableOpacity>
+        </Link>
+      </View>
+    </Container>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flexGrow: 1,
+    paddingTop: spacing.xl,
+  },
+  headerContainer: {
+    marginBottom: spacing.xl,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: spacing.md,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  input: {
+    height: 50,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    width: '100%',
+  },
+  continueButton: {
+    borderRadius: 25,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 32,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  loginContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 32,
+  },
+  normalText: {
+    fontSize: 14,
+  },
+  linkText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+}); 

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
-import { spacing, typography } from '../../constants';
+import { spacing, borderRadius } from '../../constants';
 import { moderateScale } from '../../utils/responsive';
 
 interface SocialButtonProps extends TouchableOpacityProps {
@@ -68,8 +68,8 @@ export default function SocialButton({
       alignItems: 'center',
       borderWidth: 1,
       borderColor: theme.colors.border,
-      borderRadius: spacing.borderRadius.pill,
-      height: spacing.buttonHeight,
+      borderRadius: borderRadius.pill,
+      height: 56,
       backgroundColor: isDarkMode ? '#342F3F' : theme.colors.card,
       marginBottom: spacing.md,
       position: 'relative',
@@ -89,7 +89,7 @@ export default function SocialButton({
     },
     buttonText: {
       color: theme.colors.text,
-      fontSize: typography.fontSize.md,
+      fontSize: theme.typography.fontSize.md,
       fontWeight: '500',
       textAlign: 'center',
     },
@@ -104,7 +104,7 @@ export default function SocialButton({
       <View style={dynamicStyles.iconContainer}>
         <Ionicons
           name={getIconName()}
-          size={spacing.iconSize.medium}
+          size={24}
           color={getIconColor()}
         />
       </View>
