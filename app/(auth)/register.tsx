@@ -1,46 +1,76 @@
-import { useRouter } from "expo-router";
+// React và React Native
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import RegisterForm from "../../components/auth/RegisterForm";
-import { CircleButton, Container, Row, Text } from "../../components/ui";
-import { spacing } from "../../constants";
-import { useTheme } from "../../context/ThemeContext";
-import useThemeToggle from "../../hooks/useThemeToggle";
+
+// Navigation
+import { useRouter } from "expo-router";
+
+// State management
 import { useAuthStore } from "@/stores";
+
+// Themes và Hooks
+import { Theme, useTheme } from "@/context/ThemeContext";
+import { useThemeToggle } from "@/hooks";
+
+// Constants
+import { spacing } from "@/constants";
+
+// UI Components
+import { CircleButton, Container, Row, Text } from "@/components/ui";
+
+// Feature Components
+import { RegisterForm } from "@/components/auth";
 
 export default function RegisterScreen() {
     const router = useRouter();
+
+    // Sử dụng các selectors riêng biệt từ authStore để tối ưu re-renders
     const register = useAuthStore((state) => state.register);
     const isLoading = useAuthStore((state) => state.isLoading);
+
+    // Theme và chế độ tối/sáng
     const { theme } = useTheme();
     const { isDarkMode, toggleTheme } = useThemeToggle();
+
+    // State quản lý thông báo lỗi
     const [error, setError] = useState("");
 
+    const styles = createStyles(theme);
+
+    /**
+     * Xử lý đăng ký tài khoản mới
+     * @param name Tên người dùng
+     * @param email Email người dùng
+     * @param password Mật khẩu người dùng
+     */
     const handleRegister = async (
         name: string,
         email: string,
         password: string
     ) => {
-        // Reset error state
+        // Xóa thông báo lỗi cũ
         setError("");
 
         try {
-            // Call auth context register function
+            // Gọi hàm đăng ký từ authStore
             await register(name, email, password);
-            // Navigation is handled by the AuthContext
+            // Việc điều hướng sẽ được xử lý bởi navigation guard dựa trên trạng thái isAuthenticated
         } catch (err) {
-            // Handle registration error
-            setError("Registration failed. Please try again.");
-            console.error("Registration error:", err);
+            // Xử lý lỗi đăng ký
+            setError("Register failed. Please try again.");
+            console.error("Register error:", err);
         }
     };
 
+    /**
+     * Xử lý khi nhấn nút quay lại
+     */
     const handleBack = () => {
         router.replace("/");
     };
 
-    // Header component với title và nút back
-    const header = (
+    // Component header chứa nút back, tiêu đề và nút chuyển đổi theme
+    const AuthHeader = (
         <>
             <View style={styles.backButtonContainer}>
                 <CircleButton
@@ -75,7 +105,7 @@ export default function RegisterScreen() {
             keyboardAware={true}
             scrollable={true}
             padding={spacing.lg}
-            header={header}
+            header={AuthHeader}
             contentContainerStyle={styles.contentContainer}
             backgroundColor={theme.colors.background}
         >
@@ -88,15 +118,17 @@ export default function RegisterScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    contentContainer: {
-        flexGrow: 1,
-        paddingTop: spacing.xl,
-    },
-    backButtonContainer: {
-        marginBottom: spacing.md,
-    },
-    titleContainer: {
-        marginBottom: spacing.lg,
-    },
-});
+// Tạo styles dựa trên theme
+const createStyles = (theme: Theme) =>
+    StyleSheet.create({
+        contentContainer: {
+            flexGrow: 1,
+            paddingTop: spacing.xl,
+        },
+        backButtonContainer: {
+            marginBottom: spacing.md,
+        },
+        titleContainer: {
+            marginBottom: spacing.lg,
+        },
+    });
