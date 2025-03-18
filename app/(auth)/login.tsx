@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
 import AuthFooter from "../../components/auth/AuthFooter";
 import LoginForm from "../../components/auth/LoginForm";
 import SocialLoginSection from "../../components/auth/SocialLoginSection";
-import { Column, Container, Row, ThemeToggleButton } from "../../components/ui";
+import { Container, Row, Text, ThemeToggleButton } from "../../components/ui";
 import { spacing, typography } from "../../constants";
 import { useAuth } from "../../context/AuthContext";
 import { Theme, useTheme } from "../../context/ThemeContext";
@@ -55,8 +55,8 @@ export default function LoginScreen() {
             align="center"
             style={styles.headerContainer}
         >
-            <Text style={styles.title}>Sign in</Text>
-            <ThemeToggleButton size={typography.fontSize.xxl} showBackground />
+            <Text variant="h1">Sign In</Text>
+            <ThemeToggleButton size={typography.fontSize.xxl} />
         </Row>
     );
 
@@ -69,34 +69,30 @@ export default function LoginScreen() {
             contentContainerStyle={styles.contentContainer}
             backgroundColor={theme.colors.background}
         >
-            <Column>
-                <LoginForm
-                    onLogin={handleLogin}
-                    isLoading={isLoading}
-                    step={currentStep}
-                    onStepChange={setCurrentStep}
-                    error={error}
-                />
+            <LoginForm
+                onLogin={handleLogin}
+                isLoading={isLoading}
+                step={currentStep}
+                onStepChange={setCurrentStep}
+                error={error}
+            />
 
-                {/* Only show AuthFooter and SocialLoginSection on step 1 */}
-                {currentStep === 1 && (
-                    <>
-                        <AuthFooter
-                            prompt="Don't have an Account?"
-                            linkText="Create One"
-                            linkHref="/(auth)/register"
-                        />
+            {/* Only show AuthFooter and SocialLoginSection on step 1 */}
+            {currentStep === 1 && (
+                <>
+                    <AuthFooter
+                        prompt="Don't have an Account?"
+                        linkText="Create One"
+                        linkHref="/(auth)/register"
+                    />
 
-                        <SocialLoginSection
-                            onAppleLogin={() => handleSocialLogin("apple")}
-                            onGoogleLogin={() => handleSocialLogin("google")}
-                            onFacebookLogin={() =>
-                                handleSocialLogin("facebook")
-                            }
-                        />
-                    </>
-                )}
-            </Column>
+                    <SocialLoginSection
+                        onAppleLogin={() => handleSocialLogin("apple")}
+                        onGoogleLogin={() => handleSocialLogin("google")}
+                        onFacebookLogin={() => handleSocialLogin("facebook")}
+                    />
+                </>
+            )}
         </Container>
     );
 }
@@ -108,14 +104,5 @@ const createStyles = (theme: Theme) =>
         },
         headerContainer: {
             marginBottom: spacing.xxl, //32
-        },
-        title: {
-            fontSize: typography.fontSize.xxxl,
-            fontWeight: "bold",
-            color: theme.colors.text,
-        },
-        errorText: {
-            color: theme.colors.error,
-            textAlign: "center",
         },
     });
