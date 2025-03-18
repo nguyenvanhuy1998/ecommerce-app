@@ -9,49 +9,62 @@ import useThemeToggle from "../../hooks/useThemeToggle";
 import { useAuthStore } from "@/stores";
 
 export default function LoginScreen() {
+    // Sử dụng các selectors riêng biệt từ authStore để tối ưu re-renders
     const login = useAuthStore((state) => state.login);
     const loginWithSocial = useAuthStore((state) => state.loginWithSocial);
     const isLoading = useAuthStore((state) => state.isLoading);
+
+    // Theme và chế độ tối/sáng
     const { theme } = useTheme();
     const { isDarkMode, toggleTheme } = useThemeToggle();
+
+    // State quản lý thông báo lỗi và bước đăng nhập hiện tại
     const [error, setError] = useState("");
-    const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(1); // 1: Email, 2: Password
     const styles = createStyles(theme);
 
+    /**
+     * Xử lý đăng nhập bằng email và mật khẩu
+     * @param email Email người dùng
+     * @param password Mật khẩu người dùng
+     */
     const handleLogin = async (email: string, password: string) => {
-        // Reset error state
+        // Xóa thông báo lỗi cũ
         setError("");
 
         try {
-            // Call auth context login function
+            // Gọi function đăng nhập từ authStore
             await login(email, password);
-            // Navigation is handled by the AuthContext
+            // Việc điều hướng sẽ được xử lý bởi navigation guard dựa trên trạng thái isAuthenticated
         } catch (err) {
-            // Handle login error
+            // Xử lý lỗi đăng nhập
             setError("Invalid email or password. Please try again.");
             console.error("Login error:", err);
-            // Don't rethrow the error as it's already handled here
         }
     };
 
+    /**
+     * Xử lý đăng nhập bằng tài khoản mạng xã hội
+     * @param provider Nhà cung cấp dịch vụ đăng nhập (apple, google, facebook)
+     */
     const handleSocialLogin = async (
         provider: "apple" | "google" | "facebook"
     ) => {
-        // Reset error state
+        // Xóa thông báo lỗi cũ
         setError("");
 
         try {
-            // Call auth context social login function
+            // Gọi function đăng nhập xã hội từ authStore
             await loginWithSocial(provider);
-            // Navigation is handled by the AuthContext
+            // Việc điều hướng sẽ được xử lý bởi navigation guard
         } catch (err) {
-            // Handle login error
-            setError(`Failed to login with ${provider}. Please try again.`);
-            console.error(`${provider} login error:`, err);
+            // Xử lý lỗi đăng nhập
+            setError(`Login with ${provider} failed. Please try again.`);
+            console.error(`Login error with ${provider}:`, err);
         }
     };
 
-    // Header component với title
+    // Component header chứa tiêu đề và nút chuyển đổi theme
     const header = (
         <Row
             justify="space-between"
@@ -86,7 +99,7 @@ export default function LoginScreen() {
                 error={error}
             />
 
-            {/* Only show SocialLoginSection on step 1 */}
+            {/* Chỉ hiển thị phần đăng nhập mạng xã hội ở bước 1 (nhập email) */}
             {currentStep === 1 && (
                 <SocialLoginSection
                     onAppleLogin={() => handleSocialLogin("apple")}
@@ -97,6 +110,8 @@ export default function LoginScreen() {
         </Container>
     );
 }
+
+// Tạo styles dựa trên theme
 const createStyles = (theme: Theme) =>
     StyleSheet.create({
         contentContainer: {
