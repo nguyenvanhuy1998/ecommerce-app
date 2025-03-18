@@ -1,12 +1,19 @@
+// Cách import tốt hơn, gọn gàng hơn
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
-import LoginForm from "../../components/auth/LoginForm";
-import SocialLoginSection from "../../components/auth/SocialLoginSection";
-import { CircleButton, Container, Row, Text } from "../../components/ui";
-import { spacing } from "../../constants";
-import { Theme, useTheme } from "../../context/ThemeContext";
-import useThemeToggle from "../../hooks/useThemeToggle";
+
+// Nhóm các components theo nguồn
 import { useAuthStore } from "@/stores";
+import { SocialProvider } from "@/types";
+import { Theme, useTheme } from "@/context/ThemeContext";
+import { spacing } from "@/constants";
+import { useThemeToggle } from "@/hooks";
+
+// Nhóm các UI components
+import { CircleButton, Container, Row, Text } from "@/components/ui";
+
+// Nhóm các auth components
+import { LoginForm, SocialLoginSection } from "@/components/auth";
 
 export default function LoginScreen() {
     // Sử dụng các selectors riêng biệt từ authStore để tối ưu re-renders
@@ -47,9 +54,7 @@ export default function LoginScreen() {
      * Xử lý đăng nhập bằng tài khoản mạng xã hội
      * @param provider Nhà cung cấp dịch vụ đăng nhập (apple, google, facebook)
      */
-    const handleSocialLogin = async (
-        provider: "apple" | "google" | "facebook"
-    ) => {
+    const handleSocialLogin = async (provider: SocialProvider) => {
         // Xóa thông báo lỗi cũ
         setError("");
 
@@ -65,7 +70,7 @@ export default function LoginScreen() {
     };
 
     // Component header chứa tiêu đề và nút chuyển đổi theme
-    const header = (
+    const AuthHeader = (
         <Row
             justify="space-between"
             align="center"
@@ -87,7 +92,7 @@ export default function LoginScreen() {
             keyboardAware={true}
             scrollable={true}
             padding={spacing.lg}
-            header={header}
+            header={AuthHeader}
             contentContainerStyle={styles.contentContainer}
             backgroundColor={theme.colors.background}
         >
