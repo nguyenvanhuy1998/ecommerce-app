@@ -169,7 +169,7 @@ export default function LoginForm({
                     <Column style={dynamicStyles.buttonContainer}>
                         <FormButton
                             title="Continue"
-                            size="medium"
+                            size="large"
                             onPress={handleContinue}
                             formMethods={formMethods}
                             loading={isLoading}

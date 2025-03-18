@@ -1,68 +1,153 @@
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { useTheme } from '../../context/ThemeContext';
-import SocialButton from '../ui/SocialButton';
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { StyleSheet, View, ViewStyle } from "react-native";
+import { spacing } from "../../constants/theme";
+import { useTheme } from "../../context/ThemeContext";
+import { Button, Column, Row, Text } from "../ui";
 
 interface SocialLoginSectionProps {
-  onAppleLogin?: () => void;
-  onGoogleLogin?: () => void;
-  onFacebookLogin?: () => void;
-  style?: ViewStyle;
+    onAppleLogin?: () => void;
+    onGoogleLogin?: () => void;
+    onFacebookLogin?: () => void;
+    style?: ViewStyle;
+    title?: string;
 }
 
 export default function SocialLoginSection({
-  onAppleLogin,
-  onGoogleLogin,
-  onFacebookLogin,
-  style,
+    onAppleLogin,
+    onGoogleLogin,
+    onFacebookLogin,
+    style,
+    title = "Or continue with",
 }: SocialLoginSectionProps) {
-  const { theme } = useTheme();
+    const { theme } = useTheme();
 
-  const dynamicStyles = StyleSheet.create({
-    container: {
-      width: '100%',
-      gap: 12,
-      marginTop: 20,
-    },
-    dividerContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 24,
-    },
-    divider: {
-      flex: 1,
-      height: 1,
-      backgroundColor: theme.colors.divider,
-    },
-  });
+    // Get icon name based on provider
+    const getIconName = (
+        provider: "apple" | "google" | "facebook"
+    ): React.ComponentProps<typeof Ionicons>["name"] => {
+        switch (provider) {
+            case "apple":
+                return "logo-apple";
+            case "google":
+                return "logo-google";
+            case "facebook":
+                return "logo-facebook";
+            default:
+                return "logo-google";
+        }
+    };
 
-  return (
-    <View style={[dynamicStyles.container, style]}>
-      <View style={dynamicStyles.dividerContainer}>
-        <View style={dynamicStyles.divider} />
-      </View>
+    // Get icon color based on provider
+    const getIconColor = (provider: "apple" | "google" | "facebook") => {
+        switch (provider) {
+            case "apple":
+                return theme.colors.text;
+            case "google":
+                return theme.colors.text;
+            case "facebook":
+                return "#1877F2";
+            default:
+                return theme.colors.text;
+        }
+    };
 
-      <SocialButton
-        provider="apple"
-        onPress={onAppleLogin}
-        disabled={!onAppleLogin}
-      />
+    const styles = StyleSheet.create({
+        container: {
+            width: "100%",
+            gap: spacing.md,
+            marginTop: spacing.lg,
+        },
+        dividerContainer: {
+            marginBottom: spacing.lg,
+        },
+        divider: {
+            height: 1,
+            backgroundColor: theme.colors.divider,
+            flex: 1,
+        },
+        titleContainer: {
+            marginHorizontal: spacing.md,
+        },
+        button: {
+            marginBottom: spacing.sm,
+            backgroundColor: theme.colors.card,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+        },
+        buttonText: {
+            width: "100%",
+            textAlign: "center",
+        },
+    });
 
-      <SocialButton
-        provider="google"
-        onPress={onGoogleLogin}
-        disabled={!onGoogleLogin}
-      />
+    const renderSocialIcon = (provider: "apple" | "google" | "facebook") => (
+        <Ionicons
+            name={getIconName(provider)}
+            size={32}
+            color={getIconColor(provider)}
+        />
+    );
 
-      <SocialButton
-        provider="facebook"
-        onPress={onFacebookLogin}
-        disabled={!onFacebookLogin}
-      />
-    </View>
-  );
-} 
+    return (
+        <Column
+            style={{
+                ...styles.container,
+                ...(style || {}),
+            }}
+        >
+            <Row align="center" style={styles.dividerContainer}>
+                <View style={styles.divider} />
+                {title && (
+                    <Text
+                        variant="body2"
+                        color="textSecondary"
+                        style={styles.titleContainer}
+                    >
+                        {title}
+                    </Text>
+                )}
+                <View style={styles.divider} />
+            </Row>
+
+            {onAppleLogin && (
+                <Button
+                    title="Continue with Apple"
+                    variant="secondary"
+                    onPress={onAppleLogin}
+                    iconLeft={renderSocialIcon("apple")}
+                    iconPosition="absolute"
+                    style={styles.button}
+                    textStyle={styles.buttonText}
+                    size="large"
+                />
+            )}
+
+            {onGoogleLogin && (
+                <Button
+                    title="Continue with Google"
+                    variant="secondary"
+                    onPress={onGoogleLogin}
+                    iconLeft={renderSocialIcon("google")}
+                    iconPosition="absolute"
+                    style={styles.button}
+                    textStyle={styles.buttonText}
+                    size="large"
+                />
+            )}
+
+            {onFacebookLogin && (
+                <Button
+                    title="Continue with Facebook"
+                    variant="secondary"
+                    onPress={onFacebookLogin}
+                    iconLeft={renderSocialIcon("facebook")}
+                    iconPosition="absolute"
+                    style={styles.button}
+                    textStyle={styles.buttonText}
+                    size="large"
+                />
+            )}
+        </Column>
+    );
+}

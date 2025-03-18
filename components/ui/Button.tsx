@@ -24,6 +24,7 @@ interface ButtonProps extends TouchableOpacityProps {
   textStyle?: TextStyle;
   iconLeft?: React.ReactNode;
   iconRight?: React.ReactNode;
+  iconPosition?: 'default' | 'absolute';
 }
 
 export default function Button({
@@ -38,6 +39,7 @@ export default function Button({
   textStyle,
   iconLeft,
   iconRight,
+  iconPosition = 'default',
   ...rest
 }: ButtonProps) {
   const { theme } = useTheme();
@@ -123,6 +125,60 @@ export default function Button({
   const sizeStyle = getSizeStyle();
   const textVariant = getTextVariant();
 
+  // If iconPosition is 'absolute', render icon in absolute position
+  if (iconPosition === 'absolute' && iconLeft) {
+    return (
+      <TouchableOpacity
+        style={[
+          styles.button,
+          buttonStyle,
+          sizeStyle,
+          fullWidth && styles.fullWidth,
+          disabled && styles.disabledButton,
+          { position: 'relative' },
+          style,
+        ]}
+        onPress={onPress}
+        disabled={disabled || loading}
+        activeOpacity={0.7}
+        {...rest}
+      >
+        <Row 
+          style={styles.absoluteIconContainer}
+          align="center"
+          justify="center"
+        >
+          {!loading && iconLeft}
+        </Row>
+        
+        <Row align="center" justify="center">
+          {loading ? (
+            <ActivityIndicator 
+              color={variant === 'outline' ? theme.colors.primary : theme.colors.textInverse} 
+              size="small" 
+            />
+          ) : (
+            <Text
+              variant={textVariant}
+              color={textColor}
+              semiBold
+              style={textStyle}
+            >
+              {title}
+            </Text>
+          )}
+          
+          {iconRight && !loading && (
+            <Row style={styles.iconRight}>
+              {iconRight}
+            </Row>
+          )}
+        </Row>
+      </TouchableOpacity>
+    );
+  }
+
+  // Default rendering with icons inline
   return (
     <TouchableOpacity
       style={[
@@ -140,7 +196,11 @@ export default function Button({
     >
       <Row align="center" justify="center">
         {iconLeft && !loading && (
-          <Row style={styles.iconLeft}>
+          <Row 
+            style={styles.iconLeft}
+            align="center"
+            justify="center"
+          >
             {iconLeft}
           </Row>
         )}
@@ -155,14 +215,18 @@ export default function Button({
             variant={textVariant}
             color={textColor}
             semiBold
-            style={[textStyle]}
+            style={textStyle}
           >
             {title}
           </Text>
         )}
         
         {iconRight && !loading && (
-          <Row style={styles.iconRight}>
+          <Row 
+            style={styles.iconRight}
+            align="center"
+            justify="center"
+          >
             {iconRight}
           </Row>
         )}
@@ -190,5 +254,12 @@ const styles = StyleSheet.create({
   },
   iconRight: {
     marginLeft: spacing.xs,
+  },
+  absoluteIconContainer: {
+    position: 'absolute',
+    left: spacing.md,
+    height: '100%',
+    width: 32,
+    zIndex: 1,
   },
 }); 
