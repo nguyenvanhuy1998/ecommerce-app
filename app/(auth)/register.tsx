@@ -1,20 +1,20 @@
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { useRouter } from "expo-router";
-import { useTheme } from "../../context/ThemeContext";
-import { Container, Row, Text, CircleButton } from "../../components/ui";
-import { spacing } from "../../constants";
 import RegisterForm from "../../components/auth/RegisterForm";
-import SocialLoginSection from "../../components/auth/SocialLoginSection";
-import { useAuth } from "../../context/AuthContext";
+import { CircleButton, Container, Row, Text } from "../../components/ui";
+import { spacing } from "../../constants";
+import { useTheme } from "../../context/ThemeContext";
 import useThemeToggle from "../../hooks/useThemeToggle";
+import { useAuthStore } from "@/stores";
 
 export default function RegisterScreen() {
     const router = useRouter();
+    const register = useAuthStore((state) => state.register);
+    const isLoading = useAuthStore((state) => state.isLoading);
     const { theme } = useTheme();
     const { isDarkMode, toggleTheme } = useThemeToggle();
     const [error, setError] = useState("");
-    const { register, loginWithSocial, isLoading } = useAuth();
 
     const handleRegister = async (
         name: string,
@@ -32,23 +32,6 @@ export default function RegisterScreen() {
             // Handle registration error
             setError("Registration failed. Please try again.");
             console.error("Registration error:", err);
-        }
-    };
-
-    const handleSocialLogin = async (
-        provider: "apple" | "google" | "facebook"
-    ) => {
-        // Reset error state
-        setError("");
-
-        try {
-            // Call auth context social login function
-            await loginWithSocial(provider);
-            // Navigation is handled by the AuthContext
-        } catch (err) {
-            // Handle login error
-            setError(`Failed to login with ${provider}. Please try again.`);
-            console.error(`${provider} login error:`, err);
         }
     };
 

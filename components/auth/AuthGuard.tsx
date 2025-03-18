@@ -1,12 +1,13 @@
-import React, { ReactNode } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { Redirect, Href } from 'expo-router';
-import { useAuth } from '../../context/AuthContext';
+import React, { ReactNode } from "react";
+import { View, ActivityIndicator } from "react-native";
+import { Redirect, Href } from "expo-router";
+import { useAuth } from "../../context/AuthContext";
+import { useAuthStore } from "@/stores";
 
 interface AuthGuardProps {
-  children: ReactNode;
-  requireAuth: boolean;
-  redirectTo: Href;
+    children: ReactNode;
+    requireAuth: boolean;
+    redirectTo: Href;
 }
 
 /**
@@ -15,24 +16,34 @@ interface AuthGuardProps {
  * @param requireAuth - If true, user must be authenticated; if false, user must NOT be authenticated
  * @param redirectTo - Where to redirect if authentication check fails
  */
-export default function AuthGuard({ children, requireAuth, redirectTo }: AuthGuardProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+export default function AuthGuard({
+    children,
+    requireAuth,
+    redirectTo,
+}: AuthGuardProps) {
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const isLoading = useAuthStore((state) => state.isLoading);
+    if (isLoading) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <ActivityIndicator size="large" color="#007AFF" />
+            </View>
+        );
+    }
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
-  }
+    // If requireAuth is true, user must be authenticated
+    // If requireAuth is false, user must NOT be authenticated
+    const authCheckPassed = requireAuth ? isAuthenticated : !isAuthenticated;
 
-  // If requireAuth is true, user must be authenticated
-  // If requireAuth is false, user must NOT be authenticated
-  const authCheckPassed = requireAuth ? isAuthenticated : !isAuthenticated;
+    if (!authCheckPassed) {
+        return <Redirect href={redirectTo} />;
+    }
 
-  if (!authCheckPassed) {
-    return <Redirect href={redirectTo} />;
-  }
-
-  return <>{children}</>;
-} 
+    return <>{children}</>;
+}

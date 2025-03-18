@@ -1,18 +1,26 @@
-import { useAuth } from '../context/AuthContext';
-import { View, ActivityIndicator } from 'react-native';
-import { Redirect } from 'expo-router';
+import { useAuthStore } from "@/stores";
+import { Redirect } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
 
 export default function IndexScreen() {
-  const { isAuthenticated, isLoading } = useAuth();
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const isLoading = useAuthStore((state) => state.isLoading);
+    if (isLoading) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <ActivityIndicator size="large" color="#007AFF" />
+            </View>
+        );
+    }
 
-  if (isLoading) {
+    // Use Redirect component for declarative navigation
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
+        <Redirect href={isAuthenticated ? "/(tabs)/home" : "/(auth)/login"} />
     );
-  }
-
-  // Use Redirect component for declarative navigation
-  return <Redirect href={isAuthenticated ? "/(tabs)/home" : "/(auth)/login"} />;
 }

@@ -1,17 +1,17 @@
-import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import LoginForm from "../../components/auth/LoginForm";
 import SocialLoginSection from "../../components/auth/SocialLoginSection";
 import { CircleButton, Container, Row, Text } from "../../components/ui";
 import { spacing } from "../../constants";
-import { useAuth } from "../../context/AuthContext";
 import { Theme, useTheme } from "../../context/ThemeContext";
 import useThemeToggle from "../../hooks/useThemeToggle";
+import { useAuthStore } from "@/stores";
 
 export default function LoginScreen() {
-    const router = useRouter();
-    const { login, loginWithSocial, isLoading } = useAuth();
+    const login = useAuthStore((state) => state.login);
+    const loginWithSocial = useAuthStore((state) => state.loginWithSocial);
+    const isLoading = useAuthStore((state) => state.isLoading);
     const { theme } = useTheme();
     const { isDarkMode, toggleTheme } = useThemeToggle();
     const [error, setError] = useState("");
