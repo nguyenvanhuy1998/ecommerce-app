@@ -77,21 +77,13 @@ export default function LoginScreen() {
                 error={error}
             />
 
-            {/* Only show AuthFooter and SocialLoginSection on step 1 */}
+            {/* Only show SocialLoginSection on step 1 */}
             {currentStep === 1 && (
-                <>
-                    <AuthFooter
-                        prompt="Don't have an Account?"
-                        linkText="Create One"
-                        linkHref="/(auth)/register"
-                    />
-
-                    <SocialLoginSection
-                        onAppleLogin={() => handleSocialLogin("apple")}
-                        onGoogleLogin={() => handleSocialLogin("google")}
-                        onFacebookLogin={() => handleSocialLogin("facebook")}
-                    />
-                </>
+                <SocialLoginSection
+                    onAppleLogin={() => handleSocialLogin("apple")}
+                    onGoogleLogin={() => handleSocialLogin("google")}
+                    onFacebookLogin={() => handleSocialLogin("facebook")}
+                />
             )}
         </Container>
     );

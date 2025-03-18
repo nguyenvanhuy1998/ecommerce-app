@@ -15,6 +15,7 @@ import { LoginFormData, loginSchema } from "../../validation/authSchemas";
 import FormButton from "../ui/FormButton";
 import FormInput from "../ui/FormInput";
 import { Column, Row, Text } from "../ui";
+import AuthFooter from "./AuthFooter";
 
 interface LoginFormProps {
     onLogin: (email: string, password: string) => Promise<void>;
@@ -181,6 +182,11 @@ export default function LoginForm({
                             disableIfInvalid={false}
                         />
                     </Column>
+                    <AuthFooter
+                        prompt="Don't have an Account?"
+                        linkText="Create One"
+                        linkHref="/(auth)/register"
+                    />
                 </>
             ) : (
                 // Bước 2: Nhập mật khẩu
@@ -235,21 +241,11 @@ export default function LoginForm({
                         />
                     </Column>
 
-                    <Row
-                        justify="center"
-                        style={dynamicStyles.forgotPasswordContainer}
-                    >
-                        <Text variant="body2" color="textSecondary">
-                            Forgot Password?{" "}
-                        </Text>
-                        <Link href={"/(auth)/reset-password" as any} asChild>
-                            <TouchableOpacity>
-                                <Text variant="body2" color="primary" semiBold>
-                                    Reset
-                                </Text>
-                            </TouchableOpacity>
-                        </Link>
-                    </Row>
+                    <AuthFooter
+                        prompt="Forgot Password?"
+                        linkText="Reset"
+                        linkHref="/(auth)/reset-password"
+                    />
                 </>
             )}
         </Column>
