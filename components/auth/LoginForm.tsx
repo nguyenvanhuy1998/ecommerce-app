@@ -168,6 +168,7 @@ export default function LoginForm({
                     <Column style={dynamicStyles.buttonContainer}>
                         <FormButton
                             title="Continue"
+                            size="medium"
                             onPress={handleContinue}
                             formMethods={formMethods}
                             loading={isLoading}
@@ -176,7 +177,6 @@ export default function LoginForm({
                                 !!errors.email ||
                                 !dirtyFields.email
                             }
-                            size="large"
                             fullWidth
                             disableIfInvalid={false}
                         />

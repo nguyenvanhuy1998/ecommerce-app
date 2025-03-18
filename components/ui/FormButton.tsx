@@ -15,6 +15,8 @@ interface FormButtonProps<T extends FieldValues> {
   style?: ViewStyle;
   textStyle?: TextStyle;
   disableIfInvalid?: boolean;
+  iconLeft?: React.ReactNode;
+  iconRight?: React.ReactNode;
 }
 
 function FormButton<T extends FieldValues>({
@@ -29,6 +31,8 @@ function FormButton<T extends FieldValues>({
   style,
   textStyle,
   disableIfInvalid = true,
+  iconLeft,
+  iconRight,
 }: FormButtonProps<T>) {
   const { formState } = formMethods;
   const { isSubmitting, isValid, isDirty } = formState;
@@ -47,6 +51,8 @@ function FormButton<T extends FieldValues>({
       fullWidth={fullWidth}
       style={style}
       textStyle={textStyle}
+      iconLeft={iconLeft}
+      iconRight={iconRight}
     />
   );
 }
