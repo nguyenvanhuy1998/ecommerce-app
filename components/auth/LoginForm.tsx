@@ -7,7 +7,6 @@ import {
     StyleProp,
     StyleSheet,
     TouchableOpacity,
-    View,
     ViewStyle,
     Keyboard,
 } from "react-native";
@@ -166,7 +165,7 @@ export default function LoginForm({
                         error={errors.email}
                     />
 
-                    <View style={dynamicStyles.buttonContainer}>
+                    <Column style={dynamicStyles.buttonContainer}>
                         <FormButton
                             title="Continue"
                             onPress={handleContinue}
@@ -181,7 +180,7 @@ export default function LoginForm({
                             fullWidth
                             disableIfInvalid={false}
                         />
-                    </View>
+                    </Column>
                 </>
             ) : (
                 // Bước 2: Nhập mật khẩu
@@ -224,7 +223,7 @@ export default function LoginForm({
                         error={errors.password}
                     />
 
-                    <View style={dynamicStyles.buttonContainer}>
+                    <Column style={dynamicStyles.buttonContainer}>
                         <FormButton
                             title="Login"
                             onPress={handleSubmit(handleLogin)}
@@ -234,7 +233,7 @@ export default function LoginForm({
                             fullWidth
                             disableIfInvalid={true}
                         />
-                    </View>
+                    </Column>
 
                     <Row
                         justify="center"

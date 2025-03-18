@@ -1,108 +1,179 @@
-import React from 'react';
+import React from "react";
 import {
-  StyleSheet,
-  TextInput,
-  View,
-  TouchableOpacity,
-  TextInputProps,
-  ViewStyle,
-  TextStyle,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../context/ThemeContext';
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    TextInputProps,
+    ViewStyle,
+    TextStyle,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Theme, useTheme } from "../../context/ThemeContext";
+import { spacing, borderRadius } from "../../constants/theme";
+import Text from "./Text";
+import Column from "./Column";
+import Row from "./Row";
 
-// Import Ionicons types
-import { Ionicons as IoniconsType } from '@expo/vector-icons/build/Icons';
-
+// Định nghĩa props cho Input component
 interface InputProps extends TextInputProps {
-  leftIcon?: React.ComponentProps<typeof Ionicons>['name'];
-  rightIcon?: React.ComponentProps<typeof Ionicons>['name'];
-  onRightIconPress?: () => void;
-  containerStyle?: ViewStyle;
-  inputStyle?: TextStyle;
-  error?: string;
+    leftIcon?: React.ComponentProps<typeof Ionicons>["name"];
+    rightIcon?: React.ComponentProps<typeof Ionicons>["name"];
+    onRightIconPress?: () => void;
+    containerStyle?: ViewStyle;
+    inputStyle?: TextStyle;
+    error?: string;
+    size?: "small" | "medium" | "large";
+    hideErrorMessage?: boolean;
+    helperText?: string;
 }
 
 export default function Input({
-  leftIcon,
-  rightIcon,
-  onRightIconPress,
-  containerStyle,
-  inputStyle,
-  error,
-  ...rest
+    leftIcon,
+    rightIcon,
+    onRightIconPress,
+    containerStyle,
+    inputStyle,
+    error,
+    size = "medium",
+    hideErrorMessage = false,
+    helperText,
+    ...rest
 }: InputProps) {
-  const { theme, isDarkMode } = useTheme();
+    const { theme } = useTheme();
 
-  const dynamicStyles = StyleSheet.create({
-    container: {
-      position: 'relative',
-      width: '100%',
-      marginBottom: error ? 8 : 24,
-    },
-    input: {
-      height: 56,
-      backgroundColor: isDarkMode ? '#342F3F' : '#F4F4F4',
-      borderRadius: 8,
-      paddingHorizontal: 16,
-      fontSize: 16,
-      color: theme.colors.text,
-      width: '100%',
-      borderWidth: error ? 1 : 0,
-      borderColor: error ? 'red' : 'transparent',
-      paddingLeft: leftIcon ? 48 : 16,
-      paddingRight: rightIcon ? 48 : 16,
-    },
-    leftIconContainer: {
-      position: 'absolute',
-      left: 16,
-      top: 16,
-      zIndex: 1,
-    },
-    rightIconContainer: {
-      position: 'absolute',
-      right: 16,
-      top: 16,
-      zIndex: 1,
-    },
-    errorText: {
-      color: 'red',
-      fontSize: 12,
-      marginTop: 4,
-    },
-  });
+    // Xác định kích thước input dựa vào prop size
+    const getInputHeight = () => {
+        switch (size) {
+            case "small":
+                return 44;
+            case "large":
+                return 64;
+            case "medium":
+                return 56;
+            default:
+                return 56;
+        }
+    };
 
-  return (
-    <View style={[dynamicStyles.container, containerStyle]}>
-      {leftIcon && (
-        <View style={dynamicStyles.leftIconContainer}>
-          <Ionicons
-            name={leftIcon}
-            size={24}
-            color={theme.colors.textSecondary}
-          />
-        </View>
-      )}
-      
-      <TextInput
-        style={[dynamicStyles.input, inputStyle]}
-        placeholderTextColor={theme.colors.textTertiary}
-        {...rest}
-      />
-      
-      {rightIcon && (
-        <TouchableOpacity
-          style={dynamicStyles.rightIconContainer}
-          onPress={onRightIconPress}
-          disabled={!onRightIconPress}
-        >
-          <Ionicons
-            name={rightIcon}
-            size={24}
-            color={theme.colors.textSecondary}
-          />
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-} 
+    const inputHeight = getInputHeight();
+    const iconTop = (inputHeight - 24) / 2; // Căn giữa icon theo chiều cao input
+    const dynamicStyles = createStyles(
+        theme,
+        !!error,
+        inputHeight,
+        iconTop,
+        !!leftIcon,
+        !!rightIcon
+    );
+
+    // Hiển thị helper text khi không có lỗi
+    const showHelperText = !error && helperText;
+
+    return (
+        <Column style={[dynamicStyles.container, containerStyle]}>
+            <Row style={dynamicStyles.inputContainer}>
+                {leftIcon && (
+                    <Column style={dynamicStyles.leftIconContainer}>
+                        <Ionicons
+                            name={leftIcon}
+                            size={24}
+                            color={theme.colors.textSecondary}
+                        />
+                    </Column>
+                )}
+
+                <TextInput
+                    style={[dynamicStyles.input, inputStyle]}
+                    placeholderTextColor={theme.colors.textTertiary}
+                    selectionColor={theme.colors.primary}
+                    {...rest}
+                />
+
+                {rightIcon && (
+                    <TouchableOpacity
+                        style={dynamicStyles.rightIconContainer}
+                        onPress={onRightIconPress}
+                        disabled={!onRightIconPress}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons
+                            name={rightIcon}
+                            size={24}
+                            color={theme.colors.textSecondary}
+                        />
+                    </TouchableOpacity>
+                )}
+            </Row>
+
+            {error && !hideErrorMessage && (
+                <Text
+                    variant="caption"
+                    color="error"
+                    style={dynamicStyles.errorText}
+                >
+                    {error}
+                </Text>
+            )}
+
+            {showHelperText && (
+                <Text
+                    variant="caption"
+                    color="textTertiary"
+                    style={dynamicStyles.helperText}
+                >
+                    {helperText}
+                </Text>
+            )}
+        </Column>
+    );
+}
+
+const createStyles = (
+    theme: Theme,
+    hasError: boolean,
+    inputHeight: number,
+    iconTop: number,
+    hasLeftIcon: boolean,
+    hasRightIcon: boolean
+) =>
+    StyleSheet.create({
+        container: {
+            width: "100%",
+            marginBottom: hasError ? spacing.xs : spacing.lg,
+        },
+        inputContainer: {
+            position: "relative",
+            width: "100%",
+        },
+        input: {
+            height: inputHeight,
+            backgroundColor: theme.colors.input,
+            borderRadius: borderRadius.md,
+            paddingHorizontal: spacing.md,
+            fontSize: theme.typography.fontSize.md,
+            color: theme.colors.text,
+            width: "100%",
+            borderWidth: hasError ? 1 : 0,
+            borderColor: hasError ? theme.colors.error : "transparent",
+            paddingLeft: hasLeftIcon ? spacing.xxxl + spacing.sm : spacing.md,
+            paddingRight: hasRightIcon ? spacing.xxxl + spacing.sm : spacing.md,
+        },
+        leftIconContainer: {
+            position: "absolute",
+            left: spacing.md,
+            top: iconTop,
+            zIndex: theme.zIndex.base + 1,
+        },
+        rightIconContainer: {
+            position: "absolute",
+            right: spacing.md,
+            top: iconTop,
+            zIndex: theme.zIndex.base + 1,
+        },
+        errorText: {
+            marginTop: spacing.xs,
+        },
+        helperText: {
+            marginTop: spacing.xs,
+        },
+    });
