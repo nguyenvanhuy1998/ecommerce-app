@@ -88,7 +88,7 @@ export const colors: ColorPalette = {
 
   // Background colors
   background: '#F8F8F8',
-  card: '#FFFFFF',
+  card: '#F4F4F4',
   input: '#F2F2F7',
 
   // Border colors

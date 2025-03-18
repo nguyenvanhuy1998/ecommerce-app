@@ -1,13 +1,25 @@
-import React from 'react';
-import { View, ViewStyle, StyleSheet, ViewProps } from 'react-native';
-import { spacing } from '../../constants';
+import React from "react";
+import {
+    View,
+    ViewStyle,
+    StyleSheet,
+    ViewProps,
+    StyleProp,
+} from "react-native";
+import { spacing } from "../../constants";
 
 interface ColumnProps extends ViewProps {
-  align?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
-  justify?: 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly';
-  gap?: keyof typeof spacing | number;
-  style?: ViewStyle;
-  children: React.ReactNode;
+    align?: "flex-start" | "flex-end" | "center" | "stretch" | "baseline";
+    justify?:
+        | "flex-start"
+        | "flex-end"
+        | "center"
+        | "space-between"
+        | "space-around"
+        | "space-evenly";
+    gap?: keyof typeof spacing | number;
+    style?: StyleProp<ViewStyle>;
+    children: React.ReactNode;
 }
 
 /**
@@ -19,40 +31,40 @@ interface ColumnProps extends ViewProps {
  * @param children Các phần tử con
  */
 const Column: React.FC<ColumnProps> = ({
-  align = 'stretch',
-  justify = 'flex-start',
-  gap,
-  style,
-  children,
-  ...rest
+    align = "stretch",
+    justify = "flex-start",
+    gap,
+    style,
+    children,
+    ...rest
 }) => {
-  // Xác định khoảng cách
-  const getGap = (): number | undefined => {
-    if (gap === undefined) {
-      return undefined;
-    }
-    
-    if (typeof gap === 'number') {
-      return gap;
-    }
-    
-    return spacing[gap] as number;
-  };
+    // Xác định khoảng cách
+    const getGap = (): number | undefined => {
+        if (gap === undefined) {
+            return undefined;
+        }
 
-  const styles = StyleSheet.create({
-    column: {
-      flexDirection: 'column',
-      alignItems: align,
-      justifyContent: justify,
-      gap: getGap(),
-    },
-  });
+        if (typeof gap === "number") {
+            return gap;
+        }
 
-  return (
-    <View style={[styles.column, style]} {...rest}>
-      {children}
-    </View>
-  );
+        return spacing[gap] as number;
+    };
+
+    const styles = StyleSheet.create({
+        column: {
+            flexDirection: "column",
+            alignItems: align,
+            justifyContent: justify,
+            gap: getGap(),
+        },
+    });
+
+    return (
+        <View style={[styles.column, style]} {...rest}>
+            {children}
+        </View>
+    );
 };
 
-export default Column; 
+export default Column;
