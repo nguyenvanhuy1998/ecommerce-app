@@ -14,6 +14,7 @@ const defaultAuthState: AuthState = {
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   loginWithSocial: (provider: 'apple' | 'google' | 'facebook') => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   ...defaultAuthState,
   login: async () => {},
   loginWithSocial: async () => {},
+  register: async () => {},
   logout: async () => {},
 });
 
@@ -106,6 +108,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  // Register function
+  const register = async (name: string, email: string, password: string) => {
+    setState(prev => ({ ...prev, isLoading: true }));
+    
+    try {
+      const { user, token } = await AuthService.register(name, email, password);
+      
+      setState({
+        user,
+        token,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    } catch (error) {
+      setState(prev => ({ ...prev, isLoading: false }));
+      throw error;
+    }
+  };
+
   // Logout function
   const logout = async () => {
     setState(prev => ({ ...prev, isLoading: true }));
@@ -130,6 +151,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     ...state,
     login,
     loginWithSocial,
+    register,
     logout,
   };
 

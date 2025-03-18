@@ -1,16 +1,19 @@
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet } from "react-native";
-import AuthFooter from "../../components/auth/AuthFooter";
 import LoginForm from "../../components/auth/LoginForm";
 import SocialLoginSection from "../../components/auth/SocialLoginSection";
-import { Container, Row, Text, ThemeToggleButton } from "../../components/ui";
-import { spacing, typography } from "../../constants";
+import { CircleButton, Container, Row, Text } from "../../components/ui";
+import { spacing } from "../../constants";
 import { useAuth } from "../../context/AuthContext";
 import { Theme, useTheme } from "../../context/ThemeContext";
+import useThemeToggle from "../../hooks/useThemeToggle";
 
 export default function LoginScreen() {
+    const router = useRouter();
     const { login, loginWithSocial, isLoading } = useAuth();
     const { theme } = useTheme();
+    const { isDarkMode, toggleTheme } = useThemeToggle();
     const [error, setError] = useState("");
     const [currentStep, setCurrentStep] = useState(1);
     const styles = createStyles(theme);
@@ -56,7 +59,13 @@ export default function LoginScreen() {
             style={styles.headerContainer}
         >
             <Text variant="h1">Sign In</Text>
-            <ThemeToggleButton size={typography.fontSize.xxl} />
+            <CircleButton
+                icon={isDarkMode ? "sunny" : "moon"}
+                size={24}
+                color={isDarkMode ? theme.colors.accent : theme.colors.text}
+                backgroundColor={theme.colors.card}
+                onPress={toggleTheme}
+            />
         </Row>
     );
 
@@ -64,7 +73,7 @@ export default function LoginScreen() {
         <Container
             keyboardAware={true}
             scrollable={true}
-            padding={spacing.xxl}
+            padding={spacing.lg}
             header={header}
             contentContainerStyle={styles.contentContainer}
             backgroundColor={theme.colors.background}
@@ -92,9 +101,9 @@ const createStyles = (theme: Theme) =>
     StyleSheet.create({
         contentContainer: {
             flexGrow: 1,
-            paddingTop: spacing.xl * 5, // 20*5=100
+            paddingTop: spacing.xl,
         },
         headerContainer: {
-            marginBottom: spacing.xxl, //32
+            marginBottom: spacing.xl,
         },
     });

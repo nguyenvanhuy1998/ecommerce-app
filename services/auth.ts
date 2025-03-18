@@ -24,6 +24,42 @@ export interface AuthState {
 }
 
 /**
+ * Register new user with name, email and password
+ * @param name User name
+ * @param email User email
+ * @param password User password
+ * @returns Promise with user data and token
+ */
+export const register = async (
+  name: string,
+  email: string, 
+  password: string
+): Promise<{ user: User; token: string }> => {
+  // In a real app, this would be an API call to your registration endpoint
+  // For demo purposes, we're simulating a successful registration after a delay
+  
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  // Simulate successful registration
+  // In a real app, this would come from your API response
+  const user: User = {
+    id: Math.random().toString(36).substring(2),
+    email,
+    name,
+    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`,
+  };
+  
+  const token = 'reg-token-' + Math.random().toString(36).substring(2);
+  
+  // Store auth data in secure storage
+  await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
+  await SecureStore.setItemAsync(AUTH_USER_KEY, JSON.stringify(user));
+  
+  return { user, token };
+};
+
+/**
  * Login with email and password
  * @param email User email
  * @param password User password

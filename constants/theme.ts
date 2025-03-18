@@ -68,7 +68,7 @@ export const colors: ColorPalette = {
     secondaryLight: "#7A79E3",
 
     // Accent colors
-    accent: "#FF9500",
+    accent: "#FFD700",
     accentDark: "#CC7600",
     accentLight: "#FFAA33",
 
