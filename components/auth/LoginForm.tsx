@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import {
     StyleProp,
     StyleSheet,
-    Text,
     TouchableOpacity,
     View,
     ViewStyle,
@@ -16,7 +15,7 @@ import { Theme, useTheme } from "../../context/ThemeContext";
 import { LoginFormData, loginSchema } from "../../validation/authSchemas";
 import FormButton from "../ui/FormButton";
 import FormInput from "../ui/FormInput";
-import { Column, Row } from "../ui";
+import { Column, Row, Text } from "../ui";
 
 interface LoginFormProps {
     onLogin: (email: string, password: string) => Promise<void>;
@@ -149,7 +148,9 @@ export default function LoginForm({
     return (
         <Column style={[dynamicStyles.container, style]}>
             {displayError ? (
-                <Text style={dynamicStyles.errorText}>{displayError}</Text>
+                <Text color="error" center style={dynamicStyles.errorText}>
+                    {displayError}
+                </Text>
             ) : null}
 
             {step === 1 ? (
@@ -191,12 +192,18 @@ export default function LoginForm({
                             onPress={handleBack}
                             style={dynamicStyles.backButton}
                         >
-                            <Text style={dynamicStyles.backButtonText}>
+                            <Text
+                                color="primary"
+                                medium
+                                style={dynamicStyles.backButtonText}
+                            >
                                 Edit
                             </Text>
                         </TouchableOpacity>
                         <Text
-                            style={dynamicStyles.emailDisplay}
+                            variant="body2"
+                            center
+                            flex
                             numberOfLines={1}
                             ellipsizeMode="middle"
                         >
@@ -233,12 +240,12 @@ export default function LoginForm({
                         justify="center"
                         style={dynamicStyles.forgotPasswordContainer}
                     >
-                        <Text style={dynamicStyles.normalText}>
+                        <Text variant="body2" color="textSecondary">
                             Forgot Password?{" "}
                         </Text>
                         <Link href={"/(auth)/reset-password" as any} asChild>
                             <TouchableOpacity>
-                                <Text style={dynamicStyles.linkText}>
+                                <Text variant="body2" color="primary" semiBold>
                                     Reset
                                 </Text>
                             </TouchableOpacity>
@@ -261,19 +268,8 @@ const createStyles = (theme: Theme) =>
             marginBottom: spacing.md,
             marginTop: spacing.xs,
         },
-        normalText: {
-            color: theme.colors.textSecondary,
-            fontSize: typography.fontSize.sm,
-        },
-        linkText: {
-            color: theme.colors.primary,
-            fontSize: typography.fontSize.sm,
-            fontWeight: "600",
-        },
         errorText: {
-            color: theme.colors.error,
             marginBottom: spacing.md,
-            textAlign: "center",
         },
         buttonContainer: {
             marginTop: spacing.xs,
@@ -286,19 +282,11 @@ const createStyles = (theme: Theme) =>
             borderRadius: theme.borderRadius.sm,
             width: "100%",
         },
-        emailDisplay: {
-            fontSize: typography.fontSize.sm,
-            color: theme.colors.text,
-            flex: 1,
-            textAlign: "center",
-        },
         backButton: {
             paddingVertical: spacing.xs / 2,
             paddingHorizontal: spacing.xs,
         },
         backButtonText: {
-            color: theme.colors.primary,
             fontSize: typography.fontSize.sm,
-            fontWeight: "500",
         },
     });

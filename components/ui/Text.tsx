@@ -3,7 +3,6 @@ import {
     Text as RNText,
     TextProps as RNTextProps,
     TextStyle,
-    Platform,
 } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 
