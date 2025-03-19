@@ -17,8 +17,12 @@ import { LoginForm, SocialLoginSection } from "@/components/auth";
 
 export default function LoginScreen() {
     // Sử dụng các selectors riêng biệt từ authStore để tối ưu re-renders
-    const login = useAuthStore((state) => state.login);
-    const loginWithSocial = useAuthStore((state) => state.loginWithSocial);
+    const loginWithEmailPassword = useAuthStore(
+        (state) => state.loginWithEmailPassword
+    );
+    const loginWithSocialProvider = useAuthStore(
+        (state) => state.loginWithSocialProvider
+    );
     const isLoading = useAuthStore((state) => state.isLoading);
 
     // Theme và chế độ tối/sáng
@@ -41,7 +45,7 @@ export default function LoginScreen() {
 
         try {
             // Gọi function đăng nhập từ authStore
-            await login(email, password);
+            await loginWithEmailPassword(email, password);
             // Việc điều hướng sẽ được xử lý bởi navigation guard dựa trên trạng thái isAuthenticated
         } catch (err) {
             // Xử lý lỗi đăng nhập
@@ -60,7 +64,7 @@ export default function LoginScreen() {
 
         try {
             // Gọi function đăng nhập xã hội từ authStore
-            await loginWithSocial(provider);
+            await loginWithSocialProvider(provider);
             // Việc điều hướng sẽ được xử lý bởi navigation guard
         } catch (err) {
             // Xử lý lỗi đăng nhập

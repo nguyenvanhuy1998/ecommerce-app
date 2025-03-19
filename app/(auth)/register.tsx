@@ -20,6 +20,7 @@ import { CircleButton, Container, Row, Text } from "@/components/ui";
 
 // Feature Components
 import { RegisterForm } from "@/components/auth";
+import { RegisterData } from "@/types";
 
 export default function RegisterScreen() {
     const router = useRouter();
@@ -43,17 +44,13 @@ export default function RegisterScreen() {
      * @param email Email người dùng
      * @param password Mật khẩu người dùng
      */
-    const handleRegister = async (
-        name: string,
-        email: string,
-        password: string
-    ) => {
+    const handleRegister = async (data: RegisterData) => {
         // Xóa thông báo lỗi cũ
         setError("");
 
         try {
             // Gọi hàm đăng ký từ authStore
-            await register(name, email, password);
+            await register(data);
             // Việc điều hướng sẽ được xử lý bởi navigation guard dựa trên trạng thái isAuthenticated
         } catch (err) {
             // Xử lý lỗi đăng ký

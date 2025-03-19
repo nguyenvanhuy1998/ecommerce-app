@@ -1,81 +1,66 @@
 /**
  * Authentication service for handling user authentication
  */
-import { User, AuthResponse, SocialProvider } from "@/types";
+import { User, AuthResponse, SocialProvider, RegisterData } from "@/types";
 import * as SecureStore from "expo-secure-store";
-
-// Storage keys
-const AUTH_TOKEN_KEY = "auth_token";
-const AUTH_USER_KEY = "auth_user";
+import { api } from "@/utils/apiClient";
+import { API_ENDPOINTS, AUTH_STORAGE_KEYS } from "@/constants";
 
 /**
  * Register new user with name, email and password
- * @param name User name
- * @param email User email
- * @param password User password
+ * @param data Dữ liệu đăng ký
  * @returns Promise with user data and token
  */
-export const register = async (
-    name: string,
-    email: string,
-    password: string
-): Promise<AuthResponse> => {
-    // In a real app, this would be an API call to your registration endpoint
-    // For demo purposes, we're simulating a successful registration after a delay
-
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Simulate successful registration
-    // In a real app, this would come from your API response
-    const user: User = {
-        id: Math.random().toString(36).substring(2),
-        email,
-        name,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`,
-    };
-
-    const token = "reg-token-" + Math.random().toString(36).substring(2);
-
-    // Store auth data in secure storage
-    await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
-    await SecureStore.setItemAsync(AUTH_USER_KEY, JSON.stringify(user));
-
-    return { user, token };
+export const register = async (data: RegisterData): Promise<AuthResponse> => {
+    try {
+        // Gọi API đăng ký với dữ liệu người dùng
+        const response = await api.post<AuthResponse>(
+            API_ENDPOINTS.AUTH.REGISTER,
+            data
+        );
+        // Lưu dữ liệu authentication vào secure storage
+        await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.TOKEN, response.token);
+        await SecureStore.setItemAsync(
+            AUTH_STORAGE_KEYS.USER,
+            JSON.stringify(response.user)
+        );
+        return response;
+    } catch (error) {
+        console.log("Error registering user:", error);
+        throw error;
+    }
 };
 
 /**
  * Login with email and password
- * @param email User email
- * @param password User password
+ * @param email Email người dùng
+ * @param password Mật khẩu
  * @returns Promise with user data and token
  */
 export const loginWithEmailPassword = async (
     email: string,
     password: string
 ): Promise<AuthResponse> => {
-    // In a real app, this would be an API call to your authentication endpoint
-    // For demo purposes, we're simulating a successful login after a delay
-
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // Simulate successful login
-    // In a real app, this would come from your API response
-    const user: User = {
-        id: "1",
-        email,
-        name: "Demo User",
-        avatar: "https://ui-avatars.com/api/?name=Demo+User",
-    };
-
-    const token = "demo-token-" + Math.random().toString(36).substring(2);
-
-    // Store auth data in secure storage
-    await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
-    await SecureStore.setItemAsync(AUTH_USER_KEY, JSON.stringify(user));
-
-    return { user, token };
+    try {
+        // Gọi API Đăng nhập
+        const response = await api.post<AuthResponse>(
+            API_ENDPOINTS.AUTH.LOGIN,
+            {
+                email,
+                password,
+            }
+        );
+        // Lưu dữ liệu authentication vào secure storage
+        await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.TOKEN, response.token);
+        await SecureStore.setItemAsync(
+            AUTH_STORAGE_KEYS.USER,
+            JSON.stringify(response.user)
+        );
+        return response;
+    } catch (error) {
+        console.log("Error logging in:", error);
+        throw error;
+    }
 };
 
 /**
@@ -86,40 +71,39 @@ export const loginWithEmailPassword = async (
 export const loginWithSocialProvider = async (
     provider: SocialProvider
 ): Promise<AuthResponse> => {
-    // In a real app, this would trigger the OAuth flow for the selected provider
-    // For demo purposes, we're simulating a successful login after a delay
-
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Simulate successful login
-    // In a real app, this would come from your API response
-    const user: User = {
-        id: "2",
-        email: `demo-${provider}@example.com`,
-        name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`,
-        avatar: `https://ui-avatars.com/api/?name=${provider}+User`,
-    };
-
-    const token =
-        `${provider}-token-` + Math.random().toString(36).substring(2);
-
-    // Store auth data in secure storage
-    await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
-    await SecureStore.setItemAsync(AUTH_USER_KEY, JSON.stringify(user));
-
-    return { user, token };
+    try {
+        // Gọi API đăng nhập qua mạng xã hội
+        const response = await api.post<AuthResponse>(
+            API_ENDPOINTS.AUTH.SOCIAL_LOGIN(provider)
+        );
+        // Lưu dữ liệu authentication vào secure storage
+        await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.TOKEN, response.token);
+        await SecureStore.setItemAsync(
+            AUTH_STORAGE_KEYS.USER,
+            JSON.stringify(response.user)
+        );
+        return response;
+    } catch (error) {
+        console.log(`Lỗi khi đăng nhập qua ${provider}:`, error);
+        throw error;
+    }
 };
 
 /**
  * Logout user
  */
 export const logout = async (): Promise<void> => {
-    // In a real app, you might need to call an API to invalidate the token
-
-    // Clear auth data from secure storage
-    await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
-    await SecureStore.deleteItemAsync(AUTH_USER_KEY);
+    try {
+        // Gọi API đăng xuất (nếu cần)
+        await api.post(API_ENDPOINTS.AUTH.LOGOUT);
+    } catch (error) {
+        console.error("Error logging out:", error);
+    } finally {
+        // Xóa dữ liệu authentication khỏi secure storage
+        await SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.TOKEN);
+        await SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.USER);
+        await SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
+    }
 };
 
 /**
@@ -127,13 +111,14 @@ export const logout = async (): Promise<void> => {
  * @returns Current user or null if not authenticated
  */
 export const getCurrentUser = async (): Promise<User | null> => {
-    const userJson = await SecureStore.getItemAsync(AUTH_USER_KEY);
-    if (!userJson) return null;
-
     try {
+        const userJson = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.USER);
+        if (!userJson) {
+            return null;
+        }
         return JSON.parse(userJson) as User;
     } catch (error) {
-        console.error("Error parsing user data:", error);
+        console.error("Error getting current user:", error);
         return null;
     }
 };
@@ -143,8 +128,13 @@ export const getCurrentUser = async (): Promise<User | null> => {
  * @returns Boolean indicating if user is authenticated
  */
 export const isAuthenticated = async (): Promise<boolean> => {
-    const token = await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
-    return !!token;
+    try {
+        const token = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.TOKEN);
+        return !!token;
+    } catch (error) {
+        console.error("Error checking authentication:", error);
+        return false;
+    }
 };
 
 /**
@@ -152,5 +142,10 @@ export const isAuthenticated = async (): Promise<boolean> => {
  * @returns Current auth token or null if not authenticated
  */
 export const getAuthToken = async (): Promise<string | null> => {
-    return await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
+    try {
+        return await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.TOKEN);
+    } catch (error) {
+        console.error("Error getting auth token:", error);
+        return null;
+    }
 };

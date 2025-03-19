@@ -1,12 +1,12 @@
-import { AuthState, SocialProvider } from "@/types";
+import { AuthState, RegisterData, SocialProvider, User } from "@/types";
 import { create } from "zustand";
 import * as AuthService from "@/services/auth";
 // Mở rộng AuthState để thêm các actions
 interface AuthStore extends AuthState {
     // Actions
-    login: (email: string, password: string) => Promise<void>;
-    loginWithSocial: (provider: SocialProvider) => Promise<void>;
-    register: (name: string, email: string, password: string) => Promise<void>;
+    loginWithEmailPassword: (email: string, password: string) => Promise<void>;
+    loginWithSocialProvider: (provider: SocialProvider) => Promise<void>;
+    register: (data: RegisterData) => Promise<void>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<void>;
 }
@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             });
         }
     },
-    login: async (email: string, password: string) => {
+    loginWithEmailPassword: async (email: string, password: string) => {
         set({
             isLoading: true,
         });
@@ -70,7 +70,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             throw error;
         }
     },
-    loginWithSocial: async (provider: SocialProvider) => {
+    loginWithSocialProvider: async (provider: SocialProvider) => {
         set({
             isLoading: true,
         });
@@ -91,16 +91,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
             throw error;
         }
     },
-    register: async (name: string, email: string, password: string) => {
+    register: async (data: RegisterData) => {
         set({
             isLoading: true,
         });
         try {
-            const { user, token } = await AuthService.register(
-                name,
-                email,
-                password
-            );
+            const { user, token } = await AuthService.register(data);
             set({
                 user,
                 token,

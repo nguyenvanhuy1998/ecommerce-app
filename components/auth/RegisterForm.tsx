@@ -1,9 +1,9 @@
+import { RegisterData } from "@/types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Keyboard, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { spacing } from "../../constants";
-import { useTheme } from "../../context/ThemeContext";
 import { RegisterFormData, registerSchema } from "../../validation/authSchemas";
 import { Column, Text } from "../ui";
 import FormButton from "../ui/FormButton";
@@ -11,11 +11,7 @@ import FormInput from "../ui/FormInput";
 import AuthFooter from "./AuthFooter";
 
 interface RegisterFormProps {
-    onRegister: (
-        name: string,
-        email: string,
-        password: string
-    ) => Promise<void>;
+    onRegister: (data: RegisterData) => Promise<void>;
     isLoading: boolean;
     style?: StyleProp<ViewStyle>;
     error?: string;
@@ -66,7 +62,7 @@ export default function RegisterForm({
             Keyboard.dismiss();
             setLocalError("");
 
-            await onRegister(data.name, data.email, data.password);
+            await onRegister(data);
         } catch (err) {
             console.error("Registration error:", err);
             setLocalError("Registration failed. Please try again.");
